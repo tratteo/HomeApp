@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:layout_editor_absoluteY="81dp">
 
     <LinearLayout
@@ -48,24 +49,57 @@
                 android:text="Connect to P2" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/rackCommandLine"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginRight="10dp"
-            android:ems="10"
-            android:hint="Rack CMD"
-            android:inputType="textPersonName" />
+            android:layout_marginTop="25dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/sendDataToRack"
-            android:layout_width="200dp"
+            <EditText
+                android:id="@+id/rackCommandLine"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:ems="10"
+                android:hint="Rack CMD"
+                android:inputType="textPersonName" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/deleteCommandLineButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:clickable="true"
+                android:scaleType="center"
+                app:fabSize="mini"
+                app:srcCompat="@android:drawable/ic_input_delete" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:layout_marginTop="15dp"
-            android:text="Send" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/sendDataToRack"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginLeft="10dp"
+                android:text="Send" />
+
+            <Spinner
+                android:id="@+id/rackCommands"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"></Spinner>
+
+
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
