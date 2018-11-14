@@ -19,6 +19,11 @@ import xdroid.toaster.Toaster;
 
 public class DefaultFragment extends Fragment
 {
+    String[] commands = new String[]
+    {
+        "Rack Commands",
+        "Dolomites Flythrough"
+    };
     FloatingActionButton deleteCommandLineButton;
     Button reconnectButton, connectToP1, connectToP2, sendDataToRackButton;
     EditText rackCommandLine;
@@ -43,11 +48,81 @@ public class DefaultFragment extends Fragment
         sendDataToRackButton = getView().findViewById(R.id.sendDataToRack);
         rackCommandLine = getView().findViewById(R.id.rackCommandLine);
 
-        String[] commands = new String[]
+        SetArrayAdapterForSpinner();
+
+        rackCommandsSpinner.setOnItemSelectedListener(itemChangeListener);
+        sendDataToRackButton.setOnClickListener(sendDataButtonListener);
+        deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
+        reconnectButton.setOnClickListener(reconnectButtonListener);
+        connectToP1.setOnClickListener(connectToP1ButtonListener);
+        connectToP2.setOnClickListener(connectToP2ButtonListener);
+    }
+
+
+    private View.OnClickListener deleteCommandLineButtonListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
         {
-            "Rack Commands",
-            "Dolomites Flythrough"
-        };
+            rackCommandLine.setText("");
+        }
+    };
+    private View.OnClickListener reconnectButtonListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            if(!MainActivity.connectedToRack)
+                MainActivity.StartConnectionThread();
+        }
+    };
+    private View.OnClickListener connectToP1ButtonListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            if(MainActivity.connectedToRack)
+                new MainActivity.SendDataToServerAsync().execute("p1-connect");
+        }
+    };
+    private View.OnClickListener connectToP2ButtonListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            if(MainActivity.connectedToRack)
+                new MainActivity.SendDataToServerAsync().execute("p2-connect");
+        }
+    };
+    private View.OnClickListener sendDataButtonListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            if(MainActivity.connectedToRack && !rackCommandLine.getText().equals(""))
+                new MainActivity.SendDataToServerAsync().execute("rack-" + rackCommandLine.getText());
+        }
+    };
+
+    private AdapterView.OnItemSelectedListener itemChangeListener = new AdapterView.OnItemSelectedListener()
+    {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+        {
+            switch (position)
+            {
+                case 1:
+                    rackCommandLine.setText("firefox https://www.youtube.com/tv#/watch?v=MGe_Jw6as6U");
+                    break;
+            }
+            rackCommandsSpinner.setSelection(0);
+        }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) { }
+    };
+
+    private void SetArrayAdapterForSpinner()
+    {
         final List<String> rackCommands = new ArrayList<>(Arrays.asList(commands));
         final ArrayAdapter<String> rackCommandsSpinnerAdapter = new ArrayAdapter<String>(MainActivity.context, R.layout.rack_commands_spinner, rackCommands)
         {
@@ -74,69 +149,7 @@ public class DefaultFragment extends Fragment
         };
         rackCommandsSpinnerAdapter.setDropDownViewResource(R.layout.rack_commands_spinner);
         rackCommandsSpinner.setAdapter(rackCommandsSpinnerAdapter);
-
-        rackCommandsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-            {
-                switch (position)
-                {
-                    case 1:
-                        rackCommandLine.setText("https://www.youtube.com/tv#/watch?v=MGe_Jw6as6U");
-                        break;
-                }
-                rackCommandsSpinner.setSelection(0);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-
-        deleteCommandLineButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                rackCommandLine.setText("");
-            }
-        });
-
-        sendDataToRackButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if(MainActivity.connectedToRack && !rackCommandLine.getText().equals(""))
-                    new MainActivity.SendDataToServerAsync().execute("rack-" + rackCommandLine.getText());
-            }
-        });
-
-        reconnectButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if(!MainActivity.connectedToRack)
-                {
-                    MainActivity.StartConnectionThread();
-                }
-            }
-        });
-        connectToP1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                if(MainActivity.connectedToRack)
-                    new MainActivity.SendDataToServerAsync().execute("p1-connect");
-            }
-        });
-        connectToP2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                if(MainActivity.connectedToRack)
-                    new MainActivity.SendDataToServerAsync().execute("p2-connect");
-            }
-        });
     }
+
+
 }
