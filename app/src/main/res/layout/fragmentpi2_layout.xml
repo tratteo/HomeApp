@@ -58,7 +58,7 @@
 
             <Button
                 android:id="@+id/sendButton"
-                android:layout_width="150dp"
+                android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"

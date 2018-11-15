@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:text="Reconnect to cabinet"
+            android:text="Reconnect to rack"
             android:textSize="12sp" />
 
         <LinearLayout

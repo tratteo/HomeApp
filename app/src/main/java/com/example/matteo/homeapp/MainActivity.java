@@ -1,6 +1,7 @@
 package com.example.matteo.homeapp;
 
 import android.content.Context;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import java.io.PrintWriter;
@@ -20,12 +22,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import xdroid.toaster.Toaster;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
+    static int i = 0;
     static Thread listenerThread;
     public static TextView toolbarConnectionText;
     public static final String cabinetIP = "192.168.1.40";
-    static WifiManager wifiManager;
     static ConnectToServerAsync connectToServerAsync;
     static ScheduledExecutorService connectionThreadService;
     static boolean connectedToRack = false;
@@ -133,53 +137,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static void StartConnectionThread()
     {
         toolbarConnectionText.setText("Trying to connect...");
-        connectionThreadService = Executors.newScheduledThreadPool(2);
+        connectionThreadService = Executors.newScheduledThreadPool(1);
         connectionThreadService.scheduleAtFixedRate(new Runnable()
         {
             @Override
             public void run()
             {
-                wifiManager = (WifiManager)MainActivity.context.getSystemService(Context.WIFI_SERVICE);
-                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                if(wifiInfo.getNetworkId() != -1)
+                WifiManager wifiManager = (WifiManager)MainActivity.context.getSystemService(Context.WIFI_SERVICE);
+                if(wifiManager.getConnectionInfo().getNetworkId() != -1 )
                 {
                     connectToServerAsync = new ConnectToServerAsync();
                     connectToServerAsync.execute();
                 }
                 else
                 {
+                    connectionThreadService.shutdown();
+                    toolbarConnectionText.setText("Activate Wi-Fi and retry");
                 }
             }
-        }, 400, 1000, TimeUnit.MILLISECONDS);
+        }, 300, 1500, TimeUnit.MILLISECONDS);
     }
 
-    public static class ConnectToServerAsync extends AsyncTask<Void, Void, Void>
+    public static class ConnectToServerAsync extends AsyncTask<Void, Void, String>
     {
         @Override
-        protected Void doInBackground(Void... voids)
+        protected String doInBackground(Void... voids)
         {
-            try
+            if(!connectedToRack)
             {
-                if(!connectedToRack)
+                try
                 {
                     rackSocket = new Socket(cabinetIP, 7777);
                     outToRack = new PrintWriter(rackSocket.getOutputStream());
-                    connectedToRack = true;
+                    return "connected";
+                }
+                catch (Exception e)
+                {
+                    return "failed";
                 }
             }
-            catch (Exception e)
-            {
-                connectedToRack = false;
-            }
-            return null;
+            return "null";
         }
 
         @Override
-        protected void onPostExecute(Void aVoid)
+        protected void onPostExecute(String v)
         {
-            super.onPostExecute(aVoid);
-            if(connectedToRack)
+            if(v.equals("connected"))
             {
+                connectedToRack = true;
                 String ipString = rackSocket.getInetAddress().toString().substring(1, rackSocket.getInetAddress().toString().length());
                 toolbarConnectionText.setText("Connected to: " + ipString);
                 connectionThreadService.shutdown();

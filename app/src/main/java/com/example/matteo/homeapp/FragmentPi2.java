@@ -28,15 +28,17 @@ public class FragmentPi2 extends Fragment
     String[] commands = new String[]
     {
         "Pi2 Commands",
-        "Morning Routine"
+        "Morning routine"
     };
-    Spinner pi2Spinner;
+
+    Spinner p2CommandsSpinner;
     FloatingActionButton deleteCommandLineButton;
     CheckBox toggleTimerCheckBox;
     TimePicker timerSetter;
     EditText commandLine;
     PrintWriter outToCabinet;
     Button sendButton;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -52,7 +54,7 @@ public class FragmentPi2 extends Fragment
         if(MainActivity.rackSocket != null)
             try{ outToCabinet = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
 
-        pi2Spinner = getView().findViewById(R.id.pi2Commands);
+        p2CommandsSpinner = getView().findViewById(R.id.pi2Commands);
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
         toggleTimerCheckBox = getView().findViewById(R.id.toggleTImerCheckBox);
         timerSetter = getView().findViewById(R.id.timePicker);
@@ -61,9 +63,9 @@ public class FragmentPi2 extends Fragment
 
         SetArrayAdapterForSpinner();
 
-        pi2Spinner.setOnItemSelectedListener(itemChangeListener);
+        p2CommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         sendButton.setOnClickListener(sendDataButtonListener);
-       deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
+        deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
     }
 
     private View.OnClickListener sendDataButtonListener = new View.OnClickListener()
@@ -72,10 +74,11 @@ public class FragmentPi2 extends Fragment
         public void onClick(View v)
         {
             if(MainActivity.connectedToRack && !commandLine.getText().equals(""))
-                if(commandLine.getText().equals("Morning Routine"))
+            {
+                if(commandLine.getText().toString().equals("Morning routine"))
                 {
-                    String command1 = "t" + Integer.toString(UtilitiesClass.GetTimerSeconds(6, 25)) + "-rainbowstart500";
-                    String command2 = "t" + Integer.toString(UtilitiesClass.GetTimerSeconds(7, 10)) + "-rainbowstop";
+                    String command1 = "p2-t" + Integer.toString(UtilitiesClass.GetTimerSeconds(6, 25)) + "-rainbowstart500";
+                    String command2 = "p2-t" + Integer.toString(UtilitiesClass.GetTimerSeconds(7, 10)) + "-rainbowstop";
                     new MainActivity.SendDataToServerAsync().execute(command1);
                     new MainActivity.SendDataToServerAsync().execute(command2);
                 }
@@ -86,6 +89,7 @@ public class FragmentPi2 extends Fragment
                     else
                         new MainActivity.SendDataToServerAsync().execute("p2-" + commandLine.getText());
                 }
+            }
         }
     };
 
@@ -96,6 +100,23 @@ public class FragmentPi2 extends Fragment
         {
             commandLine.setText("");
         }
+    };
+
+    private AdapterView.OnItemSelectedListener itemChangeListener = new AdapterView.OnItemSelectedListener()
+    {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+        {
+            switch (position)
+            {
+                case 1:
+                    commandLine.setText("Morning routine");
+                    break;
+            }
+            p2CommandsSpinner.setSelection(0);
+        }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) { }
     };
 
     private void SetArrayAdapterForSpinner()
@@ -125,23 +146,6 @@ public class FragmentPi2 extends Fragment
             }
         };
         rackCommandsSpinnerAdapter.setDropDownViewResource(R.layout.rack_commands_spinner);
-        pi2Spinner.setAdapter(rackCommandsSpinnerAdapter);
+        p2CommandsSpinner.setAdapter(rackCommandsSpinnerAdapter);
     }
-
-    private AdapterView.OnItemSelectedListener itemChangeListener = new AdapterView.OnItemSelectedListener()
-    {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-        {
-            switch (position)
-            {
-                case 1:
-                    commandLine.setText("Morning Routine");
-                    break;
-            }
-            pi2Spinner.setSelection(0);
-        }
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) { }
-    };
 }

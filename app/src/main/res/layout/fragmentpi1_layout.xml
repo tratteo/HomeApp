@@ -25,8 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:paddingTop="15dp">
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/commandLine"
@@ -34,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:ems="10"
                 android:hint="Command Line"
                 android:inputType="text" />
@@ -44,20 +43,35 @@
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
                 android:clickable="true"
                 android:scaleType="center"
                 app:fabSize="mini"
                 app:srcCompat="@android:drawable/ic_input_delete" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/sendButton"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
-            android:text="Send" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/sendButton"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp"
+                android:text="Send" />
+
+            <Spinner
+                android:id="@+id/pi1Commands"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"></Spinner>
+        </LinearLayout>
 
         <CheckBox
             android:id="@+id/toggleTImerCheckBox"
@@ -69,7 +83,7 @@
         <TimePicker
             android:id="@+id/timePicker"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="140dp"
             android:layout_alignParentStart="true"
             android:timePickerMode="spinner" />
 

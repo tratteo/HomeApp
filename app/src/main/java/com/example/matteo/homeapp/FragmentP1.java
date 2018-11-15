@@ -1,5 +1,6 @@
 package com.example.matteo.homeapp;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,10 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import java.io.PrintWriter;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class FragmentP1 extends Fragment
 {
+    String[] commands = new String[]
+    {
+            "Pi1 Commands"
+    };
+    Spinner p1CommandsSpinner;
     EditText commandLine;
     PrintWriter outToCabinet;
     Button sendButton;
@@ -36,12 +44,16 @@ public class FragmentP1 extends Fragment
         if(MainActivity.rackSocket != null)
             try{ outToCabinet = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
 
+        p1CommandsSpinner = getView().findViewById(R.id.pi1Commands);
         toggleTimerCheckBox = getView().findViewById(R.id.toggleTImerCheckBox);
         deleteCommandLineButton  = getView().findViewById(R.id.deleteCommandLineButton);
         timerSetter = getView().findViewById(R.id.timePicker);
         commandLine = getView().findViewById(R.id.commandLine);
         sendButton = getView().findViewById(R.id.sendButton);
 
+        SetArrayAdapterForSpinner();
+
+        p1CommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         sendButton.setOnClickListener(sendDataButtonListener);
         deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
 
@@ -68,5 +80,52 @@ public class FragmentP1 extends Fragment
             commandLine.setText("");
         }
     };
+
+    private AdapterView.OnItemSelectedListener itemChangeListener = new AdapterView.OnItemSelectedListener()
+    {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+        {
+            switch (position)
+            {
+                case 1:
+                    commandLine.setText("Morning Routine");
+                    break;
+            }
+            p1CommandsSpinner.setSelection(0);
+        }
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) { }
+    };
+
+    private void SetArrayAdapterForSpinner()
+    {
+        final List<String> rackCommands = new ArrayList<>(Arrays.asList(commands));
+        final ArrayAdapter<String> rackCommandsSpinnerAdapter = new ArrayAdapter<String>(MainActivity.context, R.layout.rack_commands_spinner, rackCommands)
+        {
+            @Override
+            public boolean isEnabled(int position)
+            {
+                if(position == 0)
+                    return false;
+                else
+                    return true;
+            }
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent)
+            {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                if(position == 0)
+                    tv.setTextColor(Color.GRAY);
+                else
+                    tv.setTextColor(Color.BLACK);
+
+                return view;
+            }
+        };
+        rackCommandsSpinnerAdapter.setDropDownViewResource(R.layout.rack_commands_spinner);
+        p1CommandsSpinner.setAdapter(rackCommandsSpinnerAdapter);
+    }
 
 }
