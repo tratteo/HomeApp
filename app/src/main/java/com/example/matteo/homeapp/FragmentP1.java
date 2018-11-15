@@ -42,29 +42,31 @@ public class FragmentP1 extends Fragment
         commandLine = getView().findViewById(R.id.commandLine);
         sendButton = getView().findViewById(R.id.sendButton);
 
-        sendButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if(MainActivity.connectedToRack && !commandLine.getText().equals(""))
-                    if(toggleTimerCheckBox.isChecked())
-                        new MainActivity.SendDataToServerAsync().execute("p1-t" + Integer.toString(UtilitiesClass.GetTimerSeconds(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
-                    else
-                        new MainActivity.SendDataToServerAsync().execute("p1-" + commandLine.getText());
-            }
-        });
-
-        deleteCommandLineButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                commandLine.setText("");
-            }
-        });
+        sendButton.setOnClickListener(sendDataButtonListener);
+        deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
 
     }
 
+    private View.OnClickListener sendDataButtonListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            if(MainActivity.connectedToRack && !commandLine.getText().equals(""))
+                if(toggleTimerCheckBox.isChecked())
+                    new MainActivity.SendDataToServerAsync().execute("p1-t" + Integer.toString(UtilitiesClass.GetTimerSeconds(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
+                else
+                    new MainActivity.SendDataToServerAsync().execute("p1-" + commandLine.getText());
+        }
+    };
+
+    private View.OnClickListener deleteCommandLineButtonListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            commandLine.setText("");
+        }
+    };
 
 }

@@ -114,6 +114,9 @@ public class DefaultFragment extends Fragment
                 case 1:
                     rackCommandLine.setText("firefox https://www.youtube.com/tv#/watch?v=MGe_Jw6as6U");
                     break;
+                case 2:
+                    rackCommandLine.setText("Morning Routine");
+                    break;
             }
             rackCommandsSpinner.setSelection(0);
         }
@@ -150,6 +153,4 @@ public class DefaultFragment extends Fragment
         rackCommandsSpinnerAdapter.setDropDownViewResource(R.layout.rack_commands_spinner);
         rackCommandsSpinner.setAdapter(rackCommandsSpinnerAdapter);
     }
-
-
 }
