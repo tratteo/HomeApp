@@ -1,11 +1,11 @@
 package com.example.matteo.homeapp;
 
 import android.content.Context;
-import android.net.wifi.SupplicantState;
-import android.net.wifi.WifiInfo;
+import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.*;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import java.io.PrintWriter;
@@ -22,14 +21,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import xdroid.toaster.Toaster;
-
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-    static int i = 0;
     static Thread listenerThread;
     public static TextView toolbarConnectionText;
-    public static final String cabinetIP = "192.168.1.40";
+    public static final String rackIP = "192.168.1.40";
     static ConnectToServerAsync connectToServerAsync;
     static ScheduledExecutorService connectionThreadService;
     static boolean connectedToRack = false;
@@ -67,28 +63,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        InflateFragment(new DefaultFragment());
         context = getApplicationContext();
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbarConnectionText = findViewById(R.id.toolbarConnectionText);
         navigationDrawer = findViewById(R.id.nav_view);
         drawerLayout = findViewById(R.id.drawer_layout);
 
-        InflateFragment(new DefaultFragment());
-        navigationDrawer.getMenu().getItem(0).setChecked(true);
 
+        navigationDrawer.getMenu().getItem(0).setChecked(true);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navigationDrawer.setNavigationItemSelectedListener(this);
-
-        toolbarConnectionText = findViewById(R.id.toolbarConnectionText);
+        setSupportActionBar(toolbar);
 
         if(!connectedToRack)
         {
-            StartConnectionThread();
+            new Handler().postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    StartConnectionThread();
+                }
+            }, 1600);
         }
-
     }
 
     @Override
@@ -143,8 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void run()
             {
-                WifiManager wifiManager = (WifiManager)MainActivity.context.getSystemService(Context.WIFI_SERVICE);
-                if(wifiManager.getConnectionInfo().getNetworkId() != -1 )
+                if(IsConnectedToWiFi())
                 {
                     connectToServerAsync = new ConnectToServerAsync();
                     connectToServerAsync.execute();
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 try
                 {
-                    rackSocket = new Socket(cabinetIP, 7777);
+                    rackSocket = new Socket(rackIP, 7777);
                     outToRack = new PrintWriter(rackSocket.getOutputStream());
                     return "connected";
                 }
@@ -221,4 +221,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 connectedToRack = false;
         }
     }
+
+    public static boolean IsConnectedToWiFi()
+    {
+        WifiManager wifiManager = (WifiManager)MainActivity.context.getSystemService(Context.WIFI_SERVICE);
+        return wifiManager.getConnectionInfo().getNetworkId() != -1;
+    }
+
 }

@@ -72,7 +72,7 @@ public class DefaultFragment extends Fragment
         @Override
         public void onClick(View v)
         {
-            if(!MainActivity.connectedToRack)
+            if(!MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
                 MainActivity.StartConnectionThread();
         }
     };
