@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FragmentP1 extends Fragment
+public class Pi1Fragment extends Fragment
 {
     String[] commands = new String[]
     {
@@ -40,10 +40,6 @@ public class FragmentP1 extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-
-        if(MainActivity.rackSocket != null)
-            try{ outToCabinet = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
-
         p1CommandsSpinner = getView().findViewById(R.id.pi1Commands);
         toggleTimerCheckBox = getView().findViewById(R.id.toggleTImerCheckBox);
         deleteCommandLineButton  = getView().findViewById(R.id.deleteCommandLineButton);
@@ -56,6 +52,8 @@ public class FragmentP1 extends Fragment
         p1CommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         sendButton.setOnClickListener(sendDataButtonListener);
         deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
+        if(MainActivity.rackSocket != null)
+            try{ outToCabinet = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
 
     }
 
@@ -66,7 +64,7 @@ public class FragmentP1 extends Fragment
         {
             if(MainActivity.connectedToRack && !commandLine.getText().equals(""))
                 if(toggleTimerCheckBox.isChecked())
-                    new MainActivity.SendDataToServerAsync().execute("p1-t" + Integer.toString(UtilitiesClass.GetTimerSeconds(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
+                    new MainActivity.SendDataToServerAsync().execute("p1-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
                 else
                     new MainActivity.SendDataToServerAsync().execute("p1-" + commandLine.getText());
         }

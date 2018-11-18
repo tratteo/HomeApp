@@ -1,10 +1,11 @@
 package com.example.matteo.homeapp;
 
+
 import java.util.Calendar;
 
 public class UtilitiesClass
 {
-    public static int GetTimerSeconds(int pickerHour, int pickerMinute)
+    public static int GetSecondsFromHoursAndMinutes(int pickerHour, int pickerMinute)
     {
         Calendar taskCalendar = Calendar.getInstance();
         taskCalendar.set(Calendar.HOUR_OF_DAY, pickerHour);

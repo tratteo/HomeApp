@@ -14,10 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import xdroid.toaster.Toaster;
 
-
-public class DefaultFragment extends Fragment
+public class RackFragment extends Fragment
 {
     String[] commands = new String[]
     {
@@ -32,14 +30,13 @@ public class DefaultFragment extends Fragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.default_fragment_layout, null);
+        return inflater.inflate(R.layout.rack_fragment_layout, null);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
         rackCommandsSpinner = getView().findViewById(R.id.rackCommands);
         reconnectButton = getView().findViewById(R.id.reconnectButton);

@@ -1,11 +1,12 @@
 package com.example.matteo.homeapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.*;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -37,10 +38,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static Context context;
 
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        registerReceiver(wifiStateReceiver, intentFilter);
+    }
     @Override
     protected void onStop()
     {
         super.onStop();
+        unregisterReceiver(wifiStateReceiver);
         try
         {
             if(!connectedToRack)
@@ -63,10 +73,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        InflateFragment(new DefaultFragment());
         context = getApplicationContext();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         toolbarConnectionText = findViewById(R.id.toolbarConnectionText);
         navigationDrawer = findViewById(R.id.nav_view);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -77,27 +87,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navigationDrawer.setNavigationItemSelectedListener(this);
-        setSupportActionBar(toolbar);
+
+        InflateFragment(new RackFragment());
+        navigationDrawer.setCheckedItem(R.id.rack);
 
         if(!connectedToRack)
-        {
-            new Handler().postDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    StartConnectionThread();
-                }
-            }, 1600);
-        }
+            StartConnectionThread();
     }
 
     @Override
     public void onBackPressed()
     {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START))
+        {
             drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        else
+        {
             super.onBackPressed();
         }
     }
@@ -115,22 +121,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item)
     {
         Fragment fragment = null;
-        switch (item.getItemId()) {
-            case R.id.defaultpage:
-                fragment = new DefaultFragment();
+        switch (item.getItemId())
+        {
+            case R.id.rack:
+                fragment = new RackFragment();
                 break;
             case R.id.pi1:
-                fragment = new FragmentP1();
+                fragment = new Pi1Fragment();
                 break;
             case R.id.pi2:
-                fragment = new FragmentPi2();
+                fragment = new Pi2Fragment();
+                break;
+            case R.id.settings:
+                fragment = new SettingsFragment();
                 break;
         }
         if (fragment != null)
         {
             InflateFragment(fragment);
         }
-
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -149,13 +158,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     connectToServerAsync = new ConnectToServerAsync();
                     connectToServerAsync.execute();
                 }
-                else
-                {
-                    connectionThreadService.shutdown();
-                    toolbarConnectionText.setText("Activate Wi-Fi and retry");
-                }
             }
-        }, 300, 1500, TimeUnit.MILLISECONDS);
+        }, 300, 2000, TimeUnit.MILLISECONDS);
     }
 
     public static class ConnectToServerAsync extends AsyncTask<Void, Void, String>
@@ -196,11 +200,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static class SendDataToServerAsync extends AsyncTask<String, Void, Void>
     {
-        String messageSent;
+        String messageToSend;
         @Override
         protected Void doInBackground(String... voids)
         {
-            messageSent = voids[0];
+            messageToSend = voids[0];
             if(connectedToRack)
             {
                 try
@@ -217,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected void onPostExecute(Void aVoid)
         {
             super.onPostExecute(aVoid);
-            if(messageSent.equals("disconnecting"))
+            if(messageToSend.equals("disconnecting"))
                 connectedToRack = false;
         }
     }
@@ -228,4 +232,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return wifiManager.getConnectionInfo().getNetworkId() != -1;
     }
 
+    private BroadcastReceiver wifiStateReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int wifiStateExtra = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
+            switch(wifiStateExtra)
+            {
+                case WifiManager.WIFI_STATE_DISABLED:
+                    if(!connectionThreadService.isShutdown())
+                    connectionThreadService.shutdown();
+                    toolbarConnectionText.setText("Activate Wi-Fi and retry");
+                    break;
+            }
+        }
+    };
 }

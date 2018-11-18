@@ -3,26 +3,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/menu_top">
         <item
-            android:title="Home Page"
-            android:id = "@+id/defaultpage"/>
-
-        <item
-            android:title = "Devices">
+            android:title="Devices">
             <menu>
                 <group android:checkableBehavior="single">
                     <item
-                        android:icon="@drawable/ic_baseline_developer_board_24px"
-                        android:id="@+id/pi1"
-                        android:title="Pi1" />
-
+                        android:id="@+id/rack"
+                        android:icon="@drawable/ic_baseline_computer_24px"
+                        android:title="Rack"/>
                     <item
+                        android:id="@+id/pi1"
                         android:icon="@drawable/ic_baseline_developer_board_24px"
+                        android:title="Raspberry Pi 1"/>
+                    <item
                         android:id="@+id/pi2"
-                        android:title="Pi2" />
+                        android:icon="@drawable/ic_baseline_developer_board_24px"
+                        android:title="Raspberry Pi 2"/>
                 </group>
             </menu>
+        </item>
+    </group>
+
+    <group
+        android:id="@+id/menu_bottom"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Settings" >
         </item>
     </group>
 </menu>

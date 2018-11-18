@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FragmentPi2 extends Fragment
+public class Pi2Fragment extends Fragment
 {
     String[] commands = new String[]
     {
@@ -36,7 +36,7 @@ public class FragmentPi2 extends Fragment
     CheckBox toggleTimerCheckBox;
     TimePicker timerSetter;
     EditText commandLine;
-    PrintWriter outToCabinet;
+    PrintWriter outToRack;
     Button sendButton;
 
     @Nullable
@@ -50,10 +50,6 @@ public class FragmentPi2 extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-
-        if(MainActivity.rackSocket != null)
-            try{ outToCabinet = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
-
         p2CommandsSpinner = getView().findViewById(R.id.pi2Commands);
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
         toggleTimerCheckBox = getView().findViewById(R.id.toggleTImerCheckBox);
@@ -66,6 +62,8 @@ public class FragmentPi2 extends Fragment
         p2CommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         sendButton.setOnClickListener(sendDataButtonListener);
         deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
+        if(MainActivity.rackSocket != null)
+            try{ outToRack = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
     }
 
     private View.OnClickListener sendDataButtonListener = new View.OnClickListener()
@@ -77,15 +75,15 @@ public class FragmentPi2 extends Fragment
             {
                 if(commandLine.getText().toString().equals("Morning routine"))
                 {
-                    String command1 = "p2-t" + Integer.toString(UtilitiesClass.GetTimerSeconds(6, 25)) + "-rainbowstart500";
-                    String command2 = "p2-t" + Integer.toString(UtilitiesClass.GetTimerSeconds(7, 10)) + "-rainbowstop";
+                    String command1 = "p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(6, 25)) + "-rainbowstart500";
+                    String command2 = "p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(7, 10)) + "-rainbowstop";
                     new MainActivity.SendDataToServerAsync().execute(command1);
                     new MainActivity.SendDataToServerAsync().execute(command2);
                 }
                 else
                 {
                     if (toggleTimerCheckBox.isChecked())
-                        new MainActivity.SendDataToServerAsync().execute("p2-t" + Integer.toString(UtilitiesClass.GetTimerSeconds(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
+                        new MainActivity.SendDataToServerAsync().execute("p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
                     else
                         new MainActivity.SendDataToServerAsync().execute("p2-" + commandLine.getText());
                 }
