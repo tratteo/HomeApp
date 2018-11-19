@@ -22,6 +22,8 @@ public class SettingsFragment extends Fragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
+        super.onViewCreated(view, savedInstanceState);
+        UtilitiesClass.HideSoftInputKeyboard(getView());
         rackIp = getView().findViewById(R.id.rack_ip);
         rackPort = getView().findViewById(R.id.rack_port);
         p1Ip = getView().findViewById(R.id.pi1_ip);

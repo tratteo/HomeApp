@@ -37,6 +37,7 @@ public class RackFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        UtilitiesClass.HideSoftInputKeyboard(getView());
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
         rackCommandsSpinner = getView().findViewById(R.id.rackCommands);
         reconnectButton = getView().findViewById(R.id.reconnectButton);

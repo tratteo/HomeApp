@@ -1,6 +1,11 @@
 package com.example.matteo.homeapp;
 
 
+import android.content.Context;
+import android.renderscript.ScriptGroup;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+
 import java.util.Calendar;
 
 public class UtilitiesClass
@@ -18,5 +23,11 @@ public class UtilitiesClass
 
         long difference = taskCalendar.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
         return (int) (difference/ (1000));
+    }
+
+    public static void HideSoftInputKeyboard(View v)
+    {
+        InputMethodManager inputMethodManager = (InputMethodManager)MainActivity.context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }

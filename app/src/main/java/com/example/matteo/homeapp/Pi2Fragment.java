@@ -50,6 +50,7 @@ public class Pi2Fragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        UtilitiesClass.HideSoftInputKeyboard(getView());
         p2CommandsSpinner = getView().findViewById(R.id.pi2Commands);
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
         toggleTimerCheckBox = getView().findViewById(R.id.toggleTImerCheckBox);

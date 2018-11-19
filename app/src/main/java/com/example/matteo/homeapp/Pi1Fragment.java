@@ -40,6 +40,7 @@ public class Pi1Fragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        UtilitiesClass.HideSoftInputKeyboard(getView());
         p1CommandsSpinner = getView().findViewById(R.id.pi1Commands);
         toggleTimerCheckBox = getView().findViewById(R.id.toggleTImerCheckBox);
         deleteCommandLineButton  = getView().findViewById(R.id.deleteCommandLineButton);
