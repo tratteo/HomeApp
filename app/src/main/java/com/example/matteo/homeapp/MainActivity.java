@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,7 +27,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 {
     static Thread listenerThread;
     public static TextView toolbarConnectionText;
-    public static final String rackIP = "192.168.1.40";
+    public static String rackIP = "192.168.1.40";
+    public static String rackPort = "7777";
     static ConnectToServerAsync connectToServerAsync;
     static ScheduledExecutorService connectionThreadService;
     static boolean connectedToRack = false;
@@ -38,11 +40,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static Context context;
 
-
     @Override
     protected void onStart()
     {
         super.onStart();
+        rackIP = UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_IP", "192.168.1.40");
+        rackPort = UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_PORT", "7777");
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         registerReceiver(wifiStateReceiver, intentFilter);
     }
@@ -72,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         context = getApplicationContext();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -171,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {
                 try
                 {
-                    rackSocket = new Socket(rackIP, 7777);
+                    rackSocket = new Socket(rackIP, Integer.parseInt(rackPort));
                     outToRack = new PrintWriter(rackSocket.getOutputStream());
                     return "connected";
                 }

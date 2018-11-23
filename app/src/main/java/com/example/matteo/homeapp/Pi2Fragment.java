@@ -13,7 +13,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -23,12 +25,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import xdroid.toaster.Toaster;
+
 public class Pi2Fragment extends Fragment
 {
     String[] commands = new String[]
     {
         "Pi2 Commands",
-        "Morning routine"
+        "Morning routine",
+
     };
 
     Spinner p2CommandsSpinner;
@@ -50,6 +55,7 @@ public class Pi2Fragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+
         UtilitiesClass.HideSoftInputKeyboard(getView());
         p2CommandsSpinner = getView().findViewById(R.id.pi2Commands);
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
@@ -63,9 +69,22 @@ public class Pi2Fragment extends Fragment
         p2CommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         sendButton.setOnClickListener(sendDataButtonListener);
         deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
+        toggleTimerCheckBox.setOnCheckedChangeListener(toggleTimerCheckBoxListener);
         if(MainActivity.rackSocket != null)
             try{ outToRack = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
     }
+
+    private CheckBox.OnCheckedChangeListener toggleTimerCheckBoxListener = new CheckBox.OnCheckedChangeListener()
+    {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+        {
+            if(isChecked)
+                timerSetter.setVisibility(View.VISIBLE);
+            else
+                timerSetter.setVisibility(View.GONE);
+        }
+    };
 
     private View.OnClickListener sendDataButtonListener = new View.OnClickListener()
     {

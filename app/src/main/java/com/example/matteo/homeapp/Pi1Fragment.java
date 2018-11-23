@@ -53,10 +53,24 @@ public class Pi1Fragment extends Fragment
         p1CommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         sendButton.setOnClickListener(sendDataButtonListener);
         deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
+        toggleTimerCheckBox.setOnCheckedChangeListener(toggleTimerCheckBoxListener);
+
         if(MainActivity.rackSocket != null)
             try{ outToCabinet = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
 
     }
+
+    private CheckBox.OnCheckedChangeListener toggleTimerCheckBoxListener = new CheckBox.OnCheckedChangeListener()
+    {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+        {
+            if(isChecked)
+                timerSetter.setVisibility(View.VISIBLE);
+            else
+                timerSetter.setVisibility(View.GONE);
+        }
+    };
 
     private View.OnClickListener sendDataButtonListener = new View.OnClickListener()
     {

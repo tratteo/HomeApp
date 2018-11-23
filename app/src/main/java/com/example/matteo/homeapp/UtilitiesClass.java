@@ -2,6 +2,7 @@ package com.example.matteo.homeapp;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.renderscript.ScriptGroup;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -29,5 +30,20 @@ public class UtilitiesClass
     {
         InputMethodManager inputMethodManager = (InputMethodManager)MainActivity.context.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    public static void SaveSharedPreferencesKey(String sharedPreference, String key, String value)
+    {
+        SharedPreferences settings = MainActivity.context.getSharedPreferences(sharedPreference, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = settings.edit();
+        edit.putString(key, value);
+        edit.apply();
+        edit.commit();
+    }
+
+    public static String GetSharedPreferencesKey(String sharedPreference, String key, String defaultValue)
+    {
+        SharedPreferences settings = MainActivity.context.getSharedPreferences(sharedPreference, Context.MODE_PRIVATE);
+        return settings.getString(key, "");
     }
 }
