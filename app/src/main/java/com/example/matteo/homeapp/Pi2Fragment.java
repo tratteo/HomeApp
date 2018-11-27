@@ -15,8 +15,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RadioGroup;
+import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -24,8 +26,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import xdroid.toaster.Toaster;
 
 public class Pi2Fragment extends Fragment
 {
@@ -36,13 +36,15 @@ public class Pi2Fragment extends Fragment
 
     };
 
+    static SeekBar rSeekBar, gSeekBar, bSeekBar;
+    static TextView rText, gText, bText;
     Spinner p2CommandsSpinner;
     FloatingActionButton deleteCommandLineButton;
     CheckBox toggleTimerCheckBox;
     TimePicker timerSetter;
     EditText commandLine;
     PrintWriter outToRack;
-    Button sendButton;
+    Button sendButton, ledOnButton, ledOffButton;
 
     @Nullable
     @Override
@@ -57,6 +59,15 @@ public class Pi2Fragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
 
         UtilitiesClass.HideSoftInputKeyboard(getView());
+
+        rText = getView().findViewById(R.id.rText);
+        gText= getView().findViewById(R.id.gText);
+        bText= getView().findViewById(R.id.bText);
+        rSeekBar = getView().findViewById(R.id.rSeekBar);
+        gSeekBar = getView().findViewById(R.id.gSeekBar);
+        bSeekBar = getView().findViewById(R.id.bSeekBar);
+        ledOnButton = getView().findViewById(R.id.ledOnButton);
+        ledOffButton = getView().findViewById(R.id.ledOffButton);
         p2CommandsSpinner = getView().findViewById(R.id.pi2Commands);
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
         toggleTimerCheckBox = getView().findViewById(R.id.toggleTImerCheckBox);
@@ -66,13 +77,57 @@ public class Pi2Fragment extends Fragment
 
         SetArrayAdapterForSpinner();
 
+        rSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+        gSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+        bSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+        ledOffButton.setOnClickListener(clickListener);
+        ledOnButton.setOnClickListener(clickListener);
+        sendButton.setOnClickListener(clickListener);
+        deleteCommandLineButton.setOnClickListener(clickListener);
+
         p2CommandsSpinner.setOnItemSelectedListener(itemChangeListener);
-        sendButton.setOnClickListener(sendDataButtonListener);
-        deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
         toggleTimerCheckBox.setOnCheckedChangeListener(toggleTimerCheckBoxListener);
+
         if(MainActivity.rackSocket != null)
             try{ outToRack = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
     }
+
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener()
+    {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+        {
+            if(fromUser)
+            {
+                switch (seekBar.getId())
+                {
+                    case R.id.rSeekBar:
+                        if (MainActivity.connectedToRack)
+                            new MainActivity.SendDataToServerAsync().execute("p2-r" + Integer.toString(progress));
+                        rText.setText("R: " + Integer.toString(progress));
+                        break;
+                    case R.id.gSeekBar:
+                        if (MainActivity.connectedToRack)
+                            new MainActivity.SendDataToServerAsync().execute("p2-g" + Integer.toString(progress));
+                        gText.setText("G: " + Integer.toString(progress));
+                        break;
+                    case R.id.bSeekBar:
+                        if (MainActivity.connectedToRack)
+                            new MainActivity.SendDataToServerAsync().execute("p2-b" + Integer.toString(progress));
+                        bText.setText("B: " + Integer.toString(progress));
+                        break;
+
+                }
+            }
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) { }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) { }
+    };
 
     private CheckBox.OnCheckedChangeListener toggleTimerCheckBoxListener = new CheckBox.OnCheckedChangeListener()
     {
@@ -86,37 +141,52 @@ public class Pi2Fragment extends Fragment
         }
     };
 
-    private View.OnClickListener sendDataButtonListener = new View.OnClickListener()
+    private View.OnClickListener clickListener = new View.OnClickListener()
     {
         @Override
         public void onClick(View v)
         {
-            if(MainActivity.connectedToRack && !commandLine.getText().equals(""))
+            //Click cases
+            switch(v.getId())
             {
-                if(commandLine.getText().toString().equals("Morning routine"))
-                {
-                    String command1 = "p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(6, 25)) + "-rainbowstart500";
-                    String command2 = "p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(7, 10)) + "-rainbowstop";
-                    new MainActivity.SendDataToServerAsync().execute(command1);
-                    new MainActivity.SendDataToServerAsync().execute(command2);
-                }
-                else
-                {
-                    if (toggleTimerCheckBox.isChecked())
-                        new MainActivity.SendDataToServerAsync().execute("p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
-                    else
-                        new MainActivity.SendDataToServerAsync().execute("p2-" + commandLine.getText());
-                }
-            }
-        }
-    };
+                case R.id.sendButton:
+                    if(MainActivity.connectedToRack && !commandLine.getText().equals(""))
+                    {
+                        if(commandLine.getText().toString().equals("Morning routine"))
+                        {
+                            String command1 = "p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(6, 25)) + "-rainbowstart500";
+                            String command2 = "p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(7, 10)) + "-rainbowstop";
+                            new MainActivity.SendDataToServerAsync().execute(command1);
+                            new MainActivity.SendDataToServerAsync().execute(command2);
+                        }
+                        else
+                        {
+                            if (toggleTimerCheckBox.isChecked())
+                                new MainActivity.SendDataToServerAsync().execute("p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
+                            else
+                                new MainActivity.SendDataToServerAsync().execute("p2-" + commandLine.getText());
+                        }
+                    }
+                    break;
 
-    private View.OnClickListener deleteCommandLineButtonListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            commandLine.setText("");
+                case R.id.ledOnButton:
+                    if(MainActivity.connectedToRack)
+                    {
+                        new MainActivity.SendDataToServerAsync().execute("p2-on");
+                    }
+                    break;
+
+                case R.id.ledOffButton:
+                    if(MainActivity.connectedToRack)
+                    {
+                        new MainActivity.SendDataToServerAsync().execute("p2-off");
+                    }
+                    break;
+
+                case R.id.deleteCommandLineButton:
+                    commandLine.setText("");
+                    break;
+            }
         }
     };
 
@@ -165,5 +235,15 @@ public class Pi2Fragment extends Fragment
         };
         rackCommandsSpinnerAdapter.setDropDownViewResource(R.layout.rack_commands_spinner);
         p2CommandsSpinner.setAdapter(rackCommandsSpinnerAdapter);
+    }
+
+    public static void ChangeProgressBarsValue(int value)
+    {
+        rSeekBar.setProgress(value, true);
+        rText.setText("R: " + Integer.toString(value));
+        gSeekBar.setProgress(value, true);
+        gText.setText("G: " + Integer.toString(value));
+        bSeekBar.setProgress(value, true);
+        bText.setText("B: " + Integer.toString(value));
     }
 }

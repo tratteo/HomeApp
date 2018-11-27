@@ -9,87 +9,18 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:text="Raspberry Pi 1"
-            android:textSize="18sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/commandLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:ems="10"
-                android:hint="Command Line"
-                android:inputType="text" />
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/deleteCommandLineButton"
-                android:layout_width="41dp"
-                android:layout_height="41dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"
-                android:clickable="true"
-                android:scaleType="center"
-                app:fabSize="mini"
-                app:srcCompat="@android:drawable/ic_input_delete" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/sendButton"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp"
-                android:text="Send" />
-
-            <Spinner
-                android:id="@+id/pi1Commands"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="15dp"></Spinner>
-        </LinearLayout>
-
-        <CheckBox
-            android:id="@+id/toggleTImerCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="Toggle timer" />
-
-        <TimePicker
-            android:id="@+id/timePicker"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:layout_alignParentStart="true"
-            android:timePickerMode="spinner"
-            android:visibility="gone" />
-
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Under Construction"
+            android:textColor="@color/colorAccent"
+            android:textSize="30sp" />
     </LinearLayout>
-
 </RelativeLayout>

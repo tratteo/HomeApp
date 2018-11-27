@@ -10,7 +10,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
@@ -19,6 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:text="Raspberry Pi 2"
             android:textSize="18sp" />
@@ -75,20 +75,110 @@
                 android:layout_marginLeft="15dp"></Spinner>
         </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/toggleTImerCheckBox"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/toggleTImerCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text="Toggle timer"
+                android:visibility="visible" />
+
+            <TimePicker
+                android:id="@+id/timePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="130dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="10dp"
+                android:timePickerMode="spinner"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="LED"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/ledOnButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="left"
+                android:layout_marginRight="10dp"
+                android:text="ON" />
+
+            <Button
+                android:id="@+id/ledOffButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:text="OFF" />
+
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/rSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:max="255" />
+
+        <TextView
+            android:id="@+id/rText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:text="Toggle timer" />
+            android:layout_gravity="center_horizontal"
+            android:text="R: 0" />
 
-        <TimePicker
-            android:id="@+id/timePicker"
+        <SeekBar
+            android:id="@+id/gSeekBar"
             android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:layout_alignParentStart="true"
-            android:timePickerMode="spinner"
-            android:visibility="gone" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:max="255" />
+
+        <TextView
+            android:id="@+id/gText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="G: 0" />
+
+        <SeekBar
+            android:id="@+id/bSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:max="255" />
+
+        <TextView
+            android:id="@+id/bText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="B: 0" />
 
     </LinearLayout>
 

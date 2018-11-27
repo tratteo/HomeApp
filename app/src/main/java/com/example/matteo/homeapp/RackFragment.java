@@ -49,56 +49,44 @@ public class RackFragment extends Fragment
         SetArrayAdapterForSpinner();
 
         rackCommandsSpinner.setOnItemSelectedListener(itemChangeListener);
-        sendDataToRackButton.setOnClickListener(sendDataButtonListener);
-        deleteCommandLineButton.setOnClickListener(deleteCommandLineButtonListener);
-        reconnectButton.setOnClickListener(reconnectButtonListener);
-        connectToP1.setOnClickListener(connectToP1ButtonListener);
-        connectToP2.setOnClickListener(connectToP2ButtonListener);
+        sendDataToRackButton.setOnClickListener(clickListener);
+        deleteCommandLineButton.setOnClickListener(clickListener);
+        reconnectButton.setOnClickListener(clickListener);
+        connectToP1.setOnClickListener(clickListener);
+        connectToP2.setOnClickListener(clickListener);
     }
 
+    private View.OnClickListener clickListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            switch (v.getId())
+            {
+                case R.id.sendDataToRack:
+                    if(MainActivity.connectedToRack && !rackCommandLine.getText().equals(""))
+                        new MainActivity.SendDataToServerAsync().execute("rack-" + rackCommandLine.getText());
+                    break;
 
-    private View.OnClickListener deleteCommandLineButtonListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            rackCommandLine.setText("");
-        }
-    };
-    private View.OnClickListener reconnectButtonListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            if(!MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
-                MainActivity.StartConnectionThread();
-        }
-    };
-    private View.OnClickListener connectToP1ButtonListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            if(MainActivity.connectedToRack)
-                new MainActivity.SendDataToServerAsync().execute("p1-connect");
-        }
-    };
-    private View.OnClickListener connectToP2ButtonListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            if(MainActivity.connectedToRack)
-                new MainActivity.SendDataToServerAsync().execute("p2-connect");
-        }
-    };
-    private View.OnClickListener sendDataButtonListener = new View.OnClickListener()
-    {
-        @Override
-        public void onClick(View v)
-        {
-            if(MainActivity.connectedToRack && !rackCommandLine.getText().equals(""))
-                new MainActivity.SendDataToServerAsync().execute("rack-" + rackCommandLine.getText());
+                case R.id.connectToP1:
+                    if(MainActivity.connectedToRack)
+                        new MainActivity.SendDataToServerAsync().execute("p1-connect");
+                    break;
+
+                case R.id.connectToP2:
+                    if(MainActivity.connectedToRack)
+                        new MainActivity.SendDataToServerAsync().execute("p2-connect");
+                    break;
+
+                case R.id.reconnectButton:
+                    if(!MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
+                        MainActivity.StartConnectionThread();
+                    break;
+                case R.id.deleteCommandLineButton:
+                    rackCommandLine.setText("");
+                    break;
+            }
+
         }
     };
 
