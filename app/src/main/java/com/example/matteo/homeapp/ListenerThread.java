@@ -70,6 +70,9 @@ public class ListenerThread implements Runnable
             case "p2-interrupt":
                 Toaster.toast("P2 has interrupted connection");
                 break;
+            case "p2-rainbowrunning":
+                Toaster.toast("Rainbow thread is running on P2");
+                break;
         }
     }
 }

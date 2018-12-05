@@ -3,11 +3,17 @@ package com.example.matteo.homeapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.renderscript.ScriptGroup;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.jcraft.jsch.*;
+
 import java.util.Calendar;
+import java.util.Properties;
+
+import xdroid.toaster.Toaster;
 
 public class UtilitiesClass
 {
@@ -45,5 +51,52 @@ public class UtilitiesClass
     {
         SharedPreferences settings = MainActivity.context.getSharedPreferences(sharedPreference, Context.MODE_PRIVATE);
         return settings.getString(key, "");
+    }
+
+    public static void RunSSHCommand(String IP, String username, String password, String command)
+    {
+        new RunSSHAsync().execute(IP, username, password, command);
+    }
+
+    private static class RunSSHAsync extends AsyncTask<String, Void, Boolean>
+    {
+        @Override
+        protected Boolean doInBackground(String... parameters)
+        {
+            try{
+                Properties config = new Properties();
+                config.put("StrictHostKeyChecking", "no");
+                JSch jsch = new JSch();
+                Session session = jsch.getSession(parameters[1], parameters[0], 22);
+                session.setPassword(parameters[2]);
+                session.setConfig(config);
+                session.setTimeout(10000);
+                session.connect();
+                ChannelExec channel = (ChannelExec)session.openChannel("exec");
+                channel.setCommand(parameters[3]);
+                channel.connect();
+                try{Thread.sleep(1000);}catch(Exception e){}
+                channel.disconnect();
+                return true;
+            }
+            catch(JSchException e)
+            {
+                Toaster.toast(e.toString());
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result)
+        {
+            super.onPostExecute(result);
+            if(result)
+            {
+                Toaster.toast("SSH executed");
+
+            }
+            else
+                Toaster.toast("Unable to execute SSH");
+        }
     }
 }

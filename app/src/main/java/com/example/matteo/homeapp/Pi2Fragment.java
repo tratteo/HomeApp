@@ -59,7 +59,6 @@ public class Pi2Fragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
 
         UtilitiesClass.HideSoftInputKeyboard(getView());
-
         rText = getView().findViewById(R.id.rText);
         gText= getView().findViewById(R.id.gText);
         bText= getView().findViewById(R.id.bText);
@@ -119,7 +118,6 @@ public class Pi2Fragment extends Fragment
 
                 }
             }
-
         }
 
         @Override

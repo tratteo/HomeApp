@@ -226,11 +226,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (messageToSend.equals("disconnecting"))
                 connectedToRack = false;
-
             else if (messageToSend.substring(0, 2).equals("p2"))
-                if(messageToSend.substring(3, 5).equals("on"))
+                if(messageToSend.length() > 4 && messageToSend.substring(3, 5).equals("on"))
                     Pi2Fragment.ChangeProgressBarsValue(255);
-                else if(messageToSend.substring(3, 6).equals("off"))
+                else if(messageToSend.length() > 5 && messageToSend.substring(3, 6).equals("off"))
                     Pi2Fragment.ChangeProgressBarsValue(0);
         }
     }

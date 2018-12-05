@@ -52,7 +52,7 @@
                 android:layout_height="40dp"
                 android:layout_marginLeft="10dp"
                 android:text="OFF" />
-
         </LinearLayout>
+
     </LinearLayout>
 </RelativeLayout>

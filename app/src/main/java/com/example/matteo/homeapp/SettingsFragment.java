@@ -17,7 +17,7 @@ public class SettingsFragment extends Fragment
 {
     EditText rackIPText, rackPortText;
     FloatingActionButton saveSettingsButton;
-    Button reconnectRackButton, reconnectP1Button, reconnectP2Button;
+    Button reconnectRackButton, reconnectP1Button, reconnectP2Button, rackSSHButton;
 
     @Nullable
     @Override
@@ -32,6 +32,7 @@ public class SettingsFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         UtilitiesClass.HideSoftInputKeyboard(getView());
 
+        rackSSHButton = getView().findViewById(R.id.rackSshButton);
         reconnectRackButton = getView().findViewById(R.id.reconnectRackButton);
         reconnectP1Button = getView().findViewById(R.id.reconnectP1Button);
         reconnectP2Button = getView().findViewById(R.id.reconnectP2Button);
@@ -42,6 +43,8 @@ public class SettingsFragment extends Fragment
 
         rackIPText.setHint(UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_IP", "192.168.1.40"));
         rackPortText.setHint(UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_PORT", "7777"));
+
+        rackSSHButton.setOnClickListener(clickListener);
         saveSettingsButton.setOnClickListener(clickListener);
         reconnectRackButton.setOnClickListener(clickListener);
         reconnectP1Button.setOnClickListener(clickListener);
@@ -92,6 +95,13 @@ public class SettingsFragment extends Fragment
                 case R.id.reconnectP2Button:
                     if(MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
                         new MainActivity.SendDataToServerAsync().execute("p2-connect");
+                    break;
+
+                case R.id.rackSshButton:
+                    if(!MainActivity.connectedToRack)
+                        UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar &");
+                    else
+                        Toaster.toast("RackServer already running");
                     break;
             }
         }
