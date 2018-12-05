@@ -22,35 +22,6 @@
             android:text="Preferences"
             android:textSize="18sp" />
 
-        <Button
-            android:id="@+id/reconnectButton"
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:text="Reconnect to rack"
-            android:textSize="12sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/connectToP1"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:text="Connect to P1" />
-
-            <Button
-                android:id="@+id/connectToP2"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:text="Connect to P2" />
-        </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

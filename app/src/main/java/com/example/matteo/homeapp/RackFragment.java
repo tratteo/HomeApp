@@ -23,7 +23,7 @@ public class RackFragment extends Fragment
         "Dolomites Flythrough"
     };
     FloatingActionButton deleteCommandLineButton;
-    Button reconnectButton, connectToP1, connectToP2, sendDataToRackButton;
+    Button sendDataToRackButton;
     EditText rackCommandLine;
     Spinner rackCommandsSpinner;
 
@@ -40,9 +40,6 @@ public class RackFragment extends Fragment
         UtilitiesClass.HideSoftInputKeyboard(getView());
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
         rackCommandsSpinner = getView().findViewById(R.id.rackCommands);
-        reconnectButton = getView().findViewById(R.id.reconnectButton);
-        connectToP1 = getView().findViewById(R.id.connectToP1);
-        connectToP2 = getView().findViewById(R.id.connectToP2);
         sendDataToRackButton = getView().findViewById(R.id.sendDataToRack);
         rackCommandLine = getView().findViewById(R.id.rackCommandLine);
 
@@ -51,9 +48,6 @@ public class RackFragment extends Fragment
         rackCommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         sendDataToRackButton.setOnClickListener(clickListener);
         deleteCommandLineButton.setOnClickListener(clickListener);
-        reconnectButton.setOnClickListener(clickListener);
-        connectToP1.setOnClickListener(clickListener);
-        connectToP2.setOnClickListener(clickListener);
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener()
@@ -66,21 +60,6 @@ public class RackFragment extends Fragment
                 case R.id.sendDataToRack:
                     if(MainActivity.connectedToRack && !rackCommandLine.getText().equals(""))
                         new MainActivity.SendDataToServerAsync().execute("rack-" + rackCommandLine.getText());
-                    break;
-
-                case R.id.connectToP1:
-                    if(MainActivity.connectedToRack)
-                        new MainActivity.SendDataToServerAsync().execute("p1-connect");
-                    break;
-
-                case R.id.connectToP2:
-                    if(MainActivity.connectedToRack)
-                        new MainActivity.SendDataToServerAsync().execute("p2-connect");
-                    break;
-
-                case R.id.reconnectButton:
-                    if(!MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
-                        MainActivity.StartConnectionThread();
                     break;
                 case R.id.deleteCommandLineButton:
                     rackCommandLine.setText("");
