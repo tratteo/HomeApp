@@ -80,24 +80,56 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:gravity="start"
+            android:gravity="center"
             android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/launchServerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginRight="10dp"
+                android:text="launch server"
+                android:textSize="11sp" />
+
+            <Button
+                android:id="@+id/closeServerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginRight="10dp"
+                android:text="close server"
+                android:textSize="11sp" />
 
             <Button
                 android:id="@+id/reconnectRackButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_gravity="left"
                 android:text="Reconnect"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/sshCommandLine"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:hint="SSH"
+                android:inputType="textPersonName"
+                android:textSize="10sp" />
 
             <Button
-                android:id="@+id/rackSshButton"
+                android:id="@+id/sendSshButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginLeft="30dp"
-                android:text="Ssh rack"
-                android:textSize="12sp" />
+                android:layout_gravity="left"
+                android:layout_marginLeft="5dp"
+                android:text="send (ssh)"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <TextView
@@ -115,7 +147,7 @@
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:text="reconnect"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/textView9"
@@ -132,7 +164,7 @@
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:text="reconnect"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
     </LinearLayout>
 

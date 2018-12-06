@@ -46,6 +46,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStart();
         rackIP = UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_IP", "192.168.1.40");
         rackPort = UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_PORT", "7777");
+        if(rackIP.equals(""))
+            UtilitiesClass.SaveSharedPreferencesKey("settings", "RACK_IP", "192.168.1.40");
+        if(rackPort.equals(""))
+            UtilitiesClass.SaveSharedPreferencesKey("settings", "RACK_PORT", "7777");
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         registerReceiver(wifiStateReceiver, intentFilter);
     }

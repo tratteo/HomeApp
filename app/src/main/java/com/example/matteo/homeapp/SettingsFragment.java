@@ -15,9 +15,9 @@ import xdroid.toaster.Toaster;
 
 public class SettingsFragment extends Fragment
 {
-    EditText rackIPText, rackPortText;
+    EditText rackIPText, rackPortText, sshCommandLine;
     FloatingActionButton saveSettingsButton;
-    Button reconnectRackButton, reconnectP1Button, reconnectP2Button, rackSSHButton;
+    Button reconnectRackButton, reconnectP1Button, reconnectP2Button, launchServerButton, closeServerButton, sendSSHButton;
 
     @Nullable
     @Override
@@ -32,11 +32,14 @@ public class SettingsFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         UtilitiesClass.HideSoftInputKeyboard(getView());
 
-        rackSSHButton = getView().findViewById(R.id.rackSshButton);
+        sendSSHButton = getView().findViewById(R.id.sendSshButton);
+        launchServerButton = getView().findViewById(R.id.launchServerButton);
+        closeServerButton = getView().findViewById(R.id.closeServerButton);
         reconnectRackButton = getView().findViewById(R.id.reconnectRackButton);
         reconnectP1Button = getView().findViewById(R.id.reconnectP1Button);
         reconnectP2Button = getView().findViewById(R.id.reconnectP2Button);
 
+        sshCommandLine = getView().findViewById(R.id.sshCommandLine);
         saveSettingsButton = getView().findViewById(R.id.saveSettingsButton);
         rackIPText = getView().findViewById(R.id.rack_ip);
         rackPortText = getView().findViewById(R.id.rack_port);
@@ -44,7 +47,9 @@ public class SettingsFragment extends Fragment
         rackIPText.setHint(UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_IP", "192.168.1.40"));
         rackPortText.setHint(UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_PORT", "7777"));
 
-        rackSSHButton.setOnClickListener(clickListener);
+        sendSSHButton.setOnClickListener(clickListener);
+        closeServerButton.setOnClickListener(clickListener);
+        launchServerButton.setOnClickListener(clickListener);
         saveSettingsButton.setOnClickListener(clickListener);
         reconnectRackButton.setOnClickListener(clickListener);
         reconnectP1Button.setOnClickListener(clickListener);
@@ -97,11 +102,17 @@ public class SettingsFragment extends Fragment
                         new MainActivity.SendDataToServerAsync().execute("p2-connect");
                     break;
 
-                case R.id.rackSshButton:
+                case R.id.launchServerButton:
                     if(!MainActivity.connectedToRack)
-                        UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar &");
-                    else
-                        Toaster.toast("RackServer already running");
+                        UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar");
+                    break;
+                case R.id.closeServerButton:
+                    if(MainActivity.connectedToRack)
+                        new MainActivity.SendDataToServerAsync().execute("rack-close server");
+                    break;
+                case R.id.sendSshButton:
+                    if(!sshCommandLine.getText().toString().equals("") && !MainActivity.connectedToRack)
+                    UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", sshCommandLine.getText().toString());
                     break;
             }
         }
