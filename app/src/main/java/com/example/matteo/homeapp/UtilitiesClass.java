@@ -70,12 +70,12 @@ public class UtilitiesClass
                 Session session = jsch.getSession(parameters[1], parameters[0], 22);
                 session.setPassword(parameters[2]);
                 session.setConfig(config);
-                session.setTimeout(10000);
+                session.setTimeout(5000);
                 session.connect();
                 ChannelExec channel = (ChannelExec)session.openChannel("exec");
                 channel.setCommand(parameters[3]);
                 channel.connect();
-                try{Thread.sleep(1000);}catch(Exception e){}
+                try{Thread.sleep(500 );}catch(Exception e){}
                 channel.disconnect();
                 return true;
             }

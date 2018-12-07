@@ -17,7 +17,7 @@ public class SettingsFragment extends Fragment
 {
     EditText rackIPText, rackPortText, sshCommandLine;
     FloatingActionButton saveSettingsButton;
-    Button reconnectRackButton, reconnectP1Button, reconnectP2Button, launchServerButton, closeServerButton, sendSSHButton;
+    Button reconnectRackButton, reconnectP1Button, reconnectP2Button, sendSSHButton;
 
     @Nullable
     @Override
@@ -33,8 +33,6 @@ public class SettingsFragment extends Fragment
         UtilitiesClass.HideSoftInputKeyboard(getView());
 
         sendSSHButton = getView().findViewById(R.id.sendSshButton);
-        launchServerButton = getView().findViewById(R.id.launchServerButton);
-        closeServerButton = getView().findViewById(R.id.closeServerButton);
         reconnectRackButton = getView().findViewById(R.id.reconnectRackButton);
         reconnectP1Button = getView().findViewById(R.id.reconnectP1Button);
         reconnectP2Button = getView().findViewById(R.id.reconnectP2Button);
@@ -48,8 +46,6 @@ public class SettingsFragment extends Fragment
         rackPortText.setHint(UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_PORT", "7777"));
 
         sendSSHButton.setOnClickListener(clickListener);
-        closeServerButton.setOnClickListener(clickListener);
-        launchServerButton.setOnClickListener(clickListener);
         saveSettingsButton.setOnClickListener(clickListener);
         reconnectRackButton.setOnClickListener(clickListener);
         reconnectP1Button.setOnClickListener(clickListener);
@@ -100,15 +96,6 @@ public class SettingsFragment extends Fragment
                 case R.id.reconnectP2Button:
                     if(MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
                         new MainActivity.SendDataToServerAsync().execute("p2-connect");
-                    break;
-
-                case R.id.launchServerButton:
-                    if(!MainActivity.connectedToRack)
-                        UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar");
-                    break;
-                case R.id.closeServerButton:
-                    if(MainActivity.connectedToRack)
-                        new MainActivity.SendDataToServerAsync().execute("rack-close server");
                     break;
                 case R.id.sendSshButton:
                     if(!sshCommandLine.getText().toString().equals("") && !MainActivity.connectedToRack)

@@ -23,7 +23,7 @@ public class RackFragment extends Fragment
         "Dolomites Flythrough"
     };
     FloatingActionButton deleteCommandLineButton;
-    Button sendDataToRackButton;
+    Button sendDataToRackButton, launchServerButton, closeServerButton, suspendRackButton;
     EditText rackCommandLine;
     Spinner rackCommandsSpinner;
 
@@ -38,6 +38,10 @@ public class RackFragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
         UtilitiesClass.HideSoftInputKeyboard(getView());
+
+        suspendRackButton = getView().findViewById(R.id.suspendRackButton);
+        launchServerButton = getView().findViewById(R.id.launchServerButton);
+        closeServerButton = getView().findViewById(R.id.closeServerButton);
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
         rackCommandsSpinner = getView().findViewById(R.id.rackCommands);
         sendDataToRackButton = getView().findViewById(R.id.sendDataToRack);
@@ -46,6 +50,9 @@ public class RackFragment extends Fragment
         SetArrayAdapterForSpinner();
 
         rackCommandsSpinner.setOnItemSelectedListener(itemChangeListener);
+        suspendRackButton.setOnClickListener(clickListener);
+        launchServerButton.setOnClickListener(clickListener);
+        closeServerButton.setOnClickListener(clickListener);
         sendDataToRackButton.setOnClickListener(clickListener);
         deleteCommandLineButton.setOnClickListener(clickListener);
     }
@@ -63,6 +70,19 @@ public class RackFragment extends Fragment
                     break;
                 case R.id.deleteCommandLineButton:
                     rackCommandLine.setText("");
+                    break;
+
+                case R.id.launchServerButton:
+                    if(!MainActivity.connectedToRack)
+                        UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar");
+                    break;
+
+                case R.id.closeServerButton:
+                    if(MainActivity.connectedToRack)
+                        new MainActivity.SendDataToServerAsync().execute("rack-close server");
+                    break;
+                case R.id.suspendRackButton:
+                    UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", "echo rackpcpassword | sudo -S systemctl suspend");
                     break;
             }
 
