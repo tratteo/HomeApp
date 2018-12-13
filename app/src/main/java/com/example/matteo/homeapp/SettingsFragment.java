@@ -15,7 +15,7 @@ import xdroid.toaster.Toaster;
 
 public class SettingsFragment extends Fragment
 {
-    EditText rackIPText, rackPortText, sshCommandLine;
+    EditText rackIPText, rackPortText, sshCommandLine, defaultRainbowRate;
     FloatingActionButton saveSettingsButton;
     Button reconnectRackButton, reconnectP1Button, reconnectP2Button, sendSSHButton;
 
@@ -37,21 +37,24 @@ public class SettingsFragment extends Fragment
         reconnectP1Button = getView().findViewById(R.id.reconnectP1Button);
         reconnectP2Button = getView().findViewById(R.id.reconnectP2Button);
 
+        defaultRainbowRate = getView().findViewById(R.id.defaultRainbowRateText);
         sshCommandLine = getView().findViewById(R.id.sshCommandLine);
         saveSettingsButton = getView().findViewById(R.id.saveSettingsButton);
+
         rackIPText = getView().findViewById(R.id.rack_ip);
         rackPortText = getView().findViewById(R.id.rack_port);
-
-        rackIPText.setHint(UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_IP", "192.168.1.40"));
-        rackPortText.setHint(UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_PORT", "7777"));
 
         sendSSHButton.setOnClickListener(clickListener);
         saveSettingsButton.setOnClickListener(clickListener);
         reconnectRackButton.setOnClickListener(clickListener);
         reconnectP1Button.setOnClickListener(clickListener);
         reconnectP2Button.setOnClickListener(clickListener);
-    }
 
+        UtilitiesClass.LoadAppPreferences();
+        rackIPText.setHint(MainActivity.rackIP);
+        rackPortText.setHint(MainActivity.rackPort);
+        defaultRainbowRate.setHint(Pi2Fragment.defaultRainbowRate);
+    }
 
     private View.OnClickListener clickListener = new View.OnClickListener()
     {
@@ -63,7 +66,7 @@ public class SettingsFragment extends Fragment
                 case R.id.saveSettingsButton:
                     String newRackPort = rackPortText.getText().toString().trim();
                     String newRackIP = rackIPText.getText().toString().trim();
-
+                    String newDefaultRainbowRate = defaultRainbowRate.getText().toString().trim();
                     if (!newRackIP.equals(""))
                     {
                         UtilitiesClass.SaveSharedPreferencesKey("settings", "RACK_IP", newRackIP);
@@ -79,6 +82,11 @@ public class SettingsFragment extends Fragment
                         MainActivity.rackPort = newRackPort;
                         MainActivity.connectedToRack = false;
                         MainActivity.StartConnectionThread();
+                    }
+                    if(!newDefaultRainbowRate.equals(""))
+                    {
+                        UtilitiesClass.SaveSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE", newDefaultRainbowRate);
+                        defaultRainbowRate.setHint(newDefaultRainbowRate);
                     }
                     Toaster.toast("Settings saved");
                     break;

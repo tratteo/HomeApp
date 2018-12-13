@@ -99,4 +99,18 @@ public class UtilitiesClass
                 Toaster.toast("Unable to execute SSH");
         }
     }
+
+    public static void LoadAppPreferences()
+    {
+        MainActivity.rackIP = UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_IP", null);
+        MainActivity.rackPort = UtilitiesClass.GetSharedPreferencesKey("settings", "RACK_PORT", null);
+        Pi2Fragment.defaultRainbowRate = UtilitiesClass.GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE", null);
+
+        if(MainActivity.rackIP.equals(""))
+            UtilitiesClass.SaveSharedPreferencesKey("settings", "RACK_IP", "192.168.1.40");
+        if(MainActivity.rackPort.equals(""))
+            UtilitiesClass.SaveSharedPreferencesKey("settings", "RACK_PORT", "7777");
+        if(Pi2Fragment.defaultRainbowRate.equals(""))
+            UtilitiesClass.SaveSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE", "800");
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.matteo.homeapp;
 
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,11 +30,11 @@ import java.util.List;
 
 public class Pi2Fragment extends Fragment
 {
+    public static String defaultRainbowRate = "800";
     String[] commands = new String[]
     {
         "Pi2 Commands",
-        "Morning routine",
-
+        "Morning routine"
     };
 
     static SeekBar rSeekBar, gSeekBar, bSeekBar;
@@ -44,7 +45,7 @@ public class Pi2Fragment extends Fragment
     TimePicker timerSetter;
     EditText commandLine;
     PrintWriter outToRack;
-    Button sendButton, ledOnButton, ledOffButton;
+    Button sendButton, ledOnButton, ledOffButton, rainbowButton;
 
     @Nullable
     @Override
@@ -65,6 +66,7 @@ public class Pi2Fragment extends Fragment
         rSeekBar = getView().findViewById(R.id.rSeekBar);
         gSeekBar = getView().findViewById(R.id.gSeekBar);
         bSeekBar = getView().findViewById(R.id.bSeekBar);
+        rainbowButton = getView().findViewById(R.id.rainbowButton);
         ledOnButton = getView().findViewById(R.id.ledOnButton);
         ledOffButton = getView().findViewById(R.id.ledOffButton);
         p2CommandsSpinner = getView().findViewById(R.id.pi2Commands);
@@ -79,6 +81,8 @@ public class Pi2Fragment extends Fragment
         rSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
         gSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
         bSeekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        rainbowButton.setOnClickListener(clickListener);
         ledOffButton.setOnClickListener(clickListener);
         ledOnButton.setOnClickListener(clickListener);
         sendButton.setOnClickListener(clickListener);
@@ -115,7 +119,6 @@ public class Pi2Fragment extends Fragment
                             new MainActivity.SendDataToServerAsync().execute("p2-b" + Integer.toString(progress));
                         bText.setText("B: " + Integer.toString(progress));
                         break;
-
                 }
             }
         }
@@ -181,6 +184,13 @@ public class Pi2Fragment extends Fragment
                     }
                     break;
 
+                case R.id.rainbowButton:
+                    if (MainActivity.connectedToRack)
+                    {
+                        String rate = UtilitiesClass.GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE", null);
+                        new MainActivity.SendDataToServerAsync().execute("p2-rainbowstart" + rate);
+                    }
+                    break;
                 case R.id.deleteCommandLineButton:
                     commandLine.setText("");
                     break;

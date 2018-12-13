@@ -10,6 +10,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
@@ -104,14 +107,21 @@
             android:id="@+id/textView6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
             android:gravity="center_horizontal"
             android:text="LED"
             android:textSize="24sp" />
 
+        <Button
+            android:id="@+id/rainbowButton"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:text="Rainbow" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -136,9 +146,7 @@
             android:id="@+id/rSeekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
             android:max="255" />
 
         <TextView
@@ -152,9 +160,7 @@
             android:id="@+id/gSeekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
             android:max="255" />
 
         <TextView
@@ -168,9 +174,7 @@
             android:id="@+id/bSeekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
             android:max="255" />
 
         <TextView
