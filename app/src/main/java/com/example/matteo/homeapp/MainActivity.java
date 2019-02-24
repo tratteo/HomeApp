@@ -4,9 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.*;
 import android.support.design.widget.NavigationView;
@@ -17,35 +15,37 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.example.matteo.homeapp.Fragments.Pi1Fragment;
+import com.example.matteo.homeapp.Fragments.Pi2Fragment;
+import com.example.matteo.homeapp.Fragments.RackFragment;
+import com.example.matteo.homeapp.Fragments.SettingsFragment;
+import com.example.matteo.homeapp.Runnables.ConnectionThread;
+import com.example.matteo.homeapp.Runnables.ListenerThread;
+import com.example.matteo.homeapp.Runnables.SendDataThread;
+
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-    static Thread listenerThread;
-    public static TextView toolbarConnectionText;
-    public static String rackIP = "192.168.1.40";
-    public static String rackPort = "7777";
-    static ConnectToServerAsync connectToServerAsync;
-    static ScheduledExecutorService connectionThreadService;
-    static boolean connectedToRack = false;
-    public static Socket rackSocket;
-    static PrintWriter outToRack;
+    public ListenerThread listenerThread;
+    private ConnectionThread connectionThread;
+    public TextView toolbarConnectionText;
+    public String rackIP = "192.168.1.40";
+    public String rackPort = "7777";
+    public boolean connectedToRack = false;
+    public Socket rackSocket;
+    public PrintWriter outToRack;
 
-    NavigationView navigationDrawer;
-    DrawerLayout drawerLayout;
-
-    public static Context context;
+    private NavigationView navigationDrawer;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onStart()
     {
         super.onStart();
-
-        UtilitiesClass.LoadAppPreferences();
+        UtilitiesClass.getInstance().LoadAppPreferences();
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         registerReceiver(wifiStateReceiver, intentFilter);
     }
@@ -57,8 +57,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try
         {
             if(!connectedToRack)
-                connectionThreadService.shutdown();
-            new SendDataToServerAsync().execute("disconnecting");
+                connectionThread.kill();
+            new Thread(new SendDataThread("disconnecting", this)).start();
+            listenerThread.kill();
         }
         catch (Exception e) { }
     }
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         super.onRestart();
         if(!connectedToRack)
-            try { StartConnectionThread(); } catch (Exception e) {}
+            StartConnectionThread();
     }
 
     @Override
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = getApplicationContext();
+        UtilitiesClass.getInstance().setMainActivity(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -83,12 +84,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationDrawer = findViewById(R.id.nav_view);
         drawerLayout = findViewById(R.id.drawer_layout);
 
-
         navigationDrawer.getMenu().getItem(0).setChecked(true);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navigationDrawer.setNavigationItemSelectedListener(this);
+
 
         InflateFragment(new RackFragment());
         navigationDrawer.setCheckedItem(R.id.rack);
@@ -146,97 +147,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public static void StartConnectionThread()
+    public void StartConnectionThread()
     {
         toolbarConnectionText.setText("Trying to connect...");
-        connectionThreadService = Executors.newScheduledThreadPool(1);
-        connectionThreadService.scheduleAtFixedRate(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if(IsConnectedToWiFi())
-                {
-                    connectToServerAsync = new ConnectToServerAsync();
-                    connectToServerAsync.execute();
-                }
-            }
-        }, 300, 2000, TimeUnit.MILLISECONDS);
+        connectionThread = new ConnectionThread(this);
+        new Thread(connectionThread).start();
     }
 
-    public static class ConnectToServerAsync extends AsyncTask<Void, Void, String>
+    public boolean IsConnectedToWiFi()
     {
-        @Override
-        protected String doInBackground(Void... voids)
-        {
-            if(!connectedToRack)
-            {
-                try
-                {
-                    rackSocket = new Socket(rackIP, Integer.parseInt(rackPort));
-                    outToRack = new PrintWriter(rackSocket.getOutputStream());
-                    return "connected";
-                }
-                catch (Exception e)
-                {
-                    return "failed";
-                }
-            }
-            return "null";
-        }
-
-        @Override
-        protected void onPostExecute(String v)
-        {
-            if(v.equals("connected"))
-            {
-                connectedToRack = true;
-                String ipString = rackSocket.getInetAddress().toString().substring(1, rackSocket.getInetAddress().toString().length());
-                toolbarConnectionText.setText("Connected to: " + ipString);
-                connectionThreadService.shutdown();
-                listenerThread = new Thread(new ListenerThread());
-                listenerThread.start();
-            }
-        }
-    }
-
-    public static class SendDataToServerAsync extends AsyncTask<String, Void, Void>
-    {
-        String messageToSend;
-        @Override
-        protected Void doInBackground(String... voids)
-        {
-            messageToSend = voids[0];
-            if(connectedToRack)
-            {
-                try
-                {
-                    outToRack.println(voids[0]);
-                    outToRack.flush();
-                }
-                catch (Exception e) {}
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid)
-        {
-            super.onPostExecute(aVoid);
-
-            if (messageToSend.equals("disconnecting"))
-                connectedToRack = false;
-            else if (messageToSend.substring(0, 2).equals("p2"))
-                if(messageToSend.length() > 4 && messageToSend.substring(3, 5).equals("on"))
-                    Pi2Fragment.ChangeProgressBarsValue(255);
-                else if(messageToSend.length() > 5 && messageToSend.substring(3, 6).equals("off"))
-                    Pi2Fragment.ChangeProgressBarsValue(0);
-        }
-    }
-
-    public static boolean IsConnectedToWiFi()
-    {
-        WifiManager wifiManager = (WifiManager)MainActivity.context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         return wifiManager.getConnectionInfo().getNetworkId() != -1;
     }
 
@@ -248,9 +168,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             switch(wifiStateExtra)
             {
                 case WifiManager.WIFI_STATE_DISABLED:
-                    if(!connectionThreadService.isShutdown())
-                    connectionThreadService.shutdown();
+                    if(connectionThread.isRunning())
+                        connectionThread.kill();
                     toolbarConnectionText.setText("Activate Wi-Fi and retry");
+                    connectedToRack = false;
                     break;
             }
         }

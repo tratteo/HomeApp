@@ -1,4 +1,4 @@
-package com.example.matteo.homeapp;
+package com.example.matteo.homeapp.Fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,6 +10,12 @@ import android.view.LayoutInflater;
 import android.view.*;
 import android.widget.*;
 
+import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.R;
+import com.example.matteo.homeapp.Runnables.SSHCommandThread;
+import com.example.matteo.homeapp.Runnables.SendDataThread;
+import com.example.matteo.homeapp.UtilitiesClass;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +23,7 @@ import java.util.List;
 
 public class RackFragment extends Fragment
 {
+    private MainActivity mainActivity;
     String[] commands = new String[]
     {
         "Rack Commands",
@@ -29,7 +36,9 @@ public class RackFragment extends Fragment
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
+        mainActivity = (MainActivity) getActivity();
         return inflater.inflate(R.layout.rack_fragment_layout, null);
     }
 
@@ -37,7 +46,7 @@ public class RackFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        UtilitiesClass.HideSoftInputKeyboard(getView());
+        UtilitiesClass.getInstance().HideSoftInputKeyboard(getView());
 
         suspendRackButton = getView().findViewById(R.id.suspendRackButton);
         launchServerButton = getView().findViewById(R.id.launchServerButton);
@@ -65,27 +74,26 @@ public class RackFragment extends Fragment
             switch (v.getId())
             {
                 case R.id.sendDataToRack:
-                    if(MainActivity.connectedToRack && !rackCommandLine.getText().equals(""))
-                        new MainActivity.SendDataToServerAsync().execute("rack-" + rackCommandLine.getText());
+                    if(mainActivity.connectedToRack && !rackCommandLine.getText().equals(""))
+                        new Thread(new SendDataThread("rack-" + rackCommandLine.getText(), mainActivity)).start();
                     break;
                 case R.id.deleteCommandLineButton:
                     rackCommandLine.setText("");
                     break;
 
                 case R.id.launchServerButton:
-                    if(!MainActivity.connectedToRack)
-                        UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar");
+                    if(!mainActivity.connectedToRack)
+                        new Thread(new SSHCommandThread("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar")).start();
                     break;
 
                 case R.id.closeServerButton:
-                    if(MainActivity.connectedToRack)
-                        new MainActivity.SendDataToServerAsync().execute("rack-close server");
+                    if(mainActivity.connectedToRack)
+                        new Thread(new SendDataThread("rack-close server", mainActivity)).start();
                     break;
                 case R.id.suspendRackButton:
-                    UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", "echo rackpcpassword | sudo -S systemctl suspend");
+                    new Thread(new SSHCommandThread("192.168.1.40", "rack", "rackpcpassword", "echo rackpcpassword | sudo -S systemctl suspend")).start();
                     break;
             }
-
         }
     };
 
@@ -112,7 +120,7 @@ public class RackFragment extends Fragment
     private void SetArrayAdapterForSpinner()
     {
         final List<String> rackCommands = new ArrayList<>(Arrays.asList(commands));
-        final ArrayAdapter<String> rackCommandsSpinnerAdapter = new ArrayAdapter<String>(MainActivity.context, R.layout.rack_commands_spinner, rackCommands)
+        final ArrayAdapter<String> rackCommandsSpinnerAdapter = new ArrayAdapter<String>(mainActivity.getApplicationContext(), R.layout.rack_commands_spinner, rackCommands)
         {
             @Override
             public boolean isEnabled(int position)

@@ -1,4 +1,9 @@
-package com.example.matteo.homeapp;
+package com.example.matteo.homeapp.Runnables;
+
+import android.util.Log;
+
+import com.example.matteo.homeapp.Interfaces.KillableRunnable;
+import com.example.matteo.homeapp.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,22 +11,26 @@ import java.io.InputStreamReader;
 
 import xdroid.toaster.Toaster;
 
-public class ListenerThread implements Runnable
+public class ListenerThread implements KillableRunnable
 {
-    BufferedReader inFromCabinet;
-    String serverResponse;
+    private boolean stop = false;
+    private MainActivity mainActivity;
+    private BufferedReader inFromCabinet;
+    private String serverResponse;
 
-    ListenerThread()
+    public ListenerThread(MainActivity mainActivity)
     {
-        if(MainActivity.rackSocket != null)
-            try{ inFromCabinet = new BufferedReader(new InputStreamReader(MainActivity.rackSocket.getInputStream())); } catch (Exception e) {}
+        this.mainActivity = mainActivity;
+        if(mainActivity.rackSocket != null)
+            try{ inFromCabinet = new BufferedReader(new InputStreamReader(mainActivity.rackSocket.getInputStream())); } catch (Exception e) {}
     }
 
     @Override
     public void run()
     {
-        while(MainActivity.connectedToRack)
+        while(!stop)
         {
+            Log.d("Listening", "LISTENER");
             try
             {
                 serverResponse = inFromCabinet.readLine();
@@ -39,25 +48,24 @@ public class ListenerThread implements Runnable
         switch (serverResponse)
         {
             case "serverdown":
-            {
-                MainActivity.toolbarConnectionText.post(new Runnable() {
+
+                mainActivity.toolbarConnectionText.post(new Runnable() {
                     @Override
                     public void run() {
-                        MainActivity.toolbarConnectionText.setText("Connection interrupted from server");
+                        mainActivity.toolbarConnectionText.setText("Connection interrupted from server");
                     }
                 });
-                try { MainActivity.rackSocket.close(); } catch (final Exception e) { }
-                MainActivity.connectedToRack = false;
+                try { mainActivity.rackSocket.close(); } catch (final Exception e) { }
+                mainActivity.connectedToRack = false;
+                stop = true;
                 break;
-            }
+
             case "p1-unable":
                 Toaster.toast("Unable to connect to P1");
                 break;
-
             case "p2-unable":
                 Toaster.toast("Unable to connect to P2");
                 break;
-
             case "p1-connected":
                 Toaster.toast("P1 Connected");
                 break;
@@ -75,4 +83,9 @@ public class ListenerThread implements Runnable
                 break;
         }
     }
+
+    @Override
+    public void kill() {stop = true;}
+    @Override
+    public boolean isRunning() {return !stop;}
 }

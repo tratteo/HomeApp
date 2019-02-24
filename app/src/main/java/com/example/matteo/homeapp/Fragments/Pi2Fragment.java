@@ -1,4 +1,4 @@
-package com.example.matteo.homeapp;
+package com.example.matteo.homeapp.Fragments;
 
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -23,6 +23,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.R;
+import com.example.matteo.homeapp.Runnables.SendDataThread;
+import com.example.matteo.homeapp.UtilitiesClass;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +35,7 @@ import java.util.List;
 
 public class Pi2Fragment extends Fragment
 {
+    private MainActivity mainActivity;
     public static String defaultRainbowRate = "800";
     String[] commands = new String[]
     {
@@ -51,6 +57,7 @@ public class Pi2Fragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
+        mainActivity = (MainActivity) getActivity();
         return inflater.inflate(R.layout.fragmentpi2_layout, null);
     }
 
@@ -59,7 +66,7 @@ public class Pi2Fragment extends Fragment
     {
         super.onViewCreated(view, savedInstanceState);
 
-        UtilitiesClass.HideSoftInputKeyboard(getView());
+        UtilitiesClass.getInstance().HideSoftInputKeyboard(getView());
         rText = getView().findViewById(R.id.rText);
         gText= getView().findViewById(R.id.gText);
         bText= getView().findViewById(R.id.bText);
@@ -91,8 +98,8 @@ public class Pi2Fragment extends Fragment
         p2CommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         toggleTimerCheckBox.setOnCheckedChangeListener(toggleTimerCheckBoxListener);
 
-        if(MainActivity.rackSocket != null)
-            try{ outToRack = new PrintWriter(MainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
+        if(mainActivity.rackSocket != null)
+            try{ outToRack = new PrintWriter(mainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
     }
 
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener()
@@ -105,18 +112,18 @@ public class Pi2Fragment extends Fragment
                 switch (seekBar.getId())
                 {
                     case R.id.rSeekBar:
-                        if (MainActivity.connectedToRack)
-                            new MainActivity.SendDataToServerAsync().execute("p2-r" + Integer.toString(progress));
+                        if (mainActivity.connectedToRack)
+                            new Thread(new SendDataThread("p2-r" + Integer.toString(progress), mainActivity)).start();
                         rText.setText("R: " + Integer.toString(progress));
                         break;
                     case R.id.gSeekBar:
-                        if (MainActivity.connectedToRack)
-                            new MainActivity.SendDataToServerAsync().execute("p2-g" + Integer.toString(progress));
+                        if (mainActivity.connectedToRack)
+                            new Thread(new SendDataThread("p2-g" + Integer.toString(progress), mainActivity)).start();
                         gText.setText("G: " + Integer.toString(progress));
                         break;
                     case R.id.bSeekBar:
-                        if (MainActivity.connectedToRack)
-                            new MainActivity.SendDataToServerAsync().execute("p2-b" + Integer.toString(progress));
+                        if (mainActivity.connectedToRack)
+                            new Thread(new SendDataThread("p2-b" + Integer.toString(progress), mainActivity)).start();
                         bText.setText("B: " + Integer.toString(progress));
                         break;
                 }
@@ -151,44 +158,47 @@ public class Pi2Fragment extends Fragment
             switch(v.getId())
             {
                 case R.id.sendButton:
-                    if(MainActivity.connectedToRack && !commandLine.getText().equals(""))
+                    if(mainActivity.connectedToRack && !commandLine.getText().equals(""))
                     {
                         if(commandLine.getText().toString().equals("Morning routine"))
                         {
-                            String command1 = "p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(6, 25)) + "-rainbowstart500";
-                            String command2 = "p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(7, 10)) + "-rainbowstop";
-                            new MainActivity.SendDataToServerAsync().execute(command1);
-                            new MainActivity.SendDataToServerAsync().execute(command2);
+                            String command1 = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(6, 25)) + "-rainbowstart500";
+                            String command2 = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(7, 10)) + "-rainbowstop";
+                            new Thread(new SendDataThread(command1, mainActivity)).start();
+                            new Thread(new SendDataThread(command2, mainActivity)).start();
                         }
                         else
                         {
                             if (toggleTimerCheckBox.isChecked())
-                                new MainActivity.SendDataToServerAsync().execute("p2-t" + Integer.toString(UtilitiesClass.GetSecondsFromHoursAndMinutes(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText());
+                            {
+                                String commandString = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText();
+                                new Thread(new SendDataThread(commandString, mainActivity)).start();
+                            }
                             else
-                                new MainActivity.SendDataToServerAsync().execute("p2-" + commandLine.getText());
+                                new Thread(new SendDataThread("p2-" + commandLine.getText(), mainActivity)).start();
                         }
                     }
                     break;
 
                 case R.id.ledOnButton:
-                    if(MainActivity.connectedToRack)
+                    if(mainActivity.connectedToRack)
                     {
-                        new MainActivity.SendDataToServerAsync().execute("p2-on");
+                        new Thread(new SendDataThread("p2-on", mainActivity)).start();
                     }
                     break;
 
                 case R.id.ledOffButton:
-                    if(MainActivity.connectedToRack)
+                    if(mainActivity.connectedToRack)
                     {
-                        new MainActivity.SendDataToServerAsync().execute("p2-off");
+                        new Thread(new SendDataThread("p2-off", mainActivity)).start();
                     }
                     break;
 
                 case R.id.rainbowButton:
-                    if (MainActivity.connectedToRack)
+                    if (mainActivity.connectedToRack)
                     {
-                        String rate = UtilitiesClass.GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE", null);
-                        new MainActivity.SendDataToServerAsync().execute("p2-rainbowstart" + rate);
+                        String rate = UtilitiesClass.getInstance().GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE");
+                        new Thread(new SendDataThread("p2-rainbowstart" + rate, mainActivity)).start();
                     }
                     break;
                 case R.id.deleteCommandLineButton:
@@ -218,7 +228,7 @@ public class Pi2Fragment extends Fragment
     private void SetArrayAdapterForSpinner()
     {
         final List<String> rackCommands = new ArrayList<>(Arrays.asList(commands));
-        final ArrayAdapter<String> rackCommandsSpinnerAdapter = new ArrayAdapter<String>(MainActivity.context, R.layout.rack_commands_spinner, rackCommands)
+        final ArrayAdapter<String> rackCommandsSpinnerAdapter = new ArrayAdapter<String>(mainActivity.getApplicationContext(), R.layout.rack_commands_spinner, rackCommands)
         {
             @Override
             public boolean isEnabled(int position)

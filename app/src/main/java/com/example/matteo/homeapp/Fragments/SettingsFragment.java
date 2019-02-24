@@ -1,4 +1,4 @@
-package com.example.matteo.homeapp;
+package com.example.matteo.homeapp.Fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,10 +11,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.matteo.homeapp.Fragments.Pi2Fragment;
+import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.R;
+import com.example.matteo.homeapp.Runnables.SSHCommandThread;
+import com.example.matteo.homeapp.Runnables.SendDataThread;
+import com.example.matteo.homeapp.UtilitiesClass;
+
 import xdroid.toaster.Toaster;
 
 public class SettingsFragment extends Fragment
 {
+    private MainActivity mainActivity;
     EditText rackIPText, rackPortText, sshCommandLine, defaultRainbowRate;
     FloatingActionButton saveSettingsButton;
     Button reconnectRackButton, reconnectP1Button, reconnectP2Button, sendSSHButton;
@@ -23,6 +31,7 @@ public class SettingsFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
+        mainActivity = (MainActivity) getActivity();
         return inflater.inflate(R.layout.fragment_settings, null);
     }
 
@@ -30,7 +39,7 @@ public class SettingsFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        UtilitiesClass.HideSoftInputKeyboard(getView());
+        UtilitiesClass.getInstance().HideSoftInputKeyboard(getView());
 
         sendSSHButton = getView().findViewById(R.id.sendSshButton);
         reconnectRackButton = getView().findViewById(R.id.reconnectRackButton);
@@ -50,9 +59,9 @@ public class SettingsFragment extends Fragment
         reconnectP1Button.setOnClickListener(clickListener);
         reconnectP2Button.setOnClickListener(clickListener);
 
-        UtilitiesClass.LoadAppPreferences();
-        rackIPText.setHint(MainActivity.rackIP);
-        rackPortText.setHint(MainActivity.rackPort);
+        UtilitiesClass.getInstance().LoadAppPreferences();
+        rackIPText.setHint(mainActivity.rackIP);
+        rackPortText.setHint(mainActivity.rackPort);
         defaultRainbowRate.setHint(Pi2Fragment.defaultRainbowRate);
     }
 
@@ -69,45 +78,45 @@ public class SettingsFragment extends Fragment
                     String newDefaultRainbowRate = defaultRainbowRate.getText().toString().trim();
                     if (!newRackIP.equals(""))
                     {
-                        UtilitiesClass.SaveSharedPreferencesKey("settings", "RACK_IP", newRackIP);
+                        UtilitiesClass.getInstance().SaveSharedPreferencesKey("settings", "RACK_IP", newRackIP);
                         rackIPText.setHint(newRackIP);
-                        MainActivity.rackIP = newRackIP;
-                        MainActivity.connectedToRack = false;
-                        MainActivity.StartConnectionThread();
+                        mainActivity.rackIP = newRackIP;
+                        mainActivity.connectedToRack = false;
+                        mainActivity.StartConnectionThread();
                     }
                     if(!newRackPort.equals(""))
                     {
-                        UtilitiesClass.SaveSharedPreferencesKey("settings", "RACK_PORT", newRackPort);
+                        UtilitiesClass.getInstance().SaveSharedPreferencesKey("settings", "RACK_PORT", newRackPort);
                         rackPortText.setHint(newRackPort);
-                        MainActivity.rackPort = newRackPort;
-                        MainActivity.connectedToRack = false;
-                        MainActivity.StartConnectionThread();
+                        mainActivity.rackPort = newRackPort;
+                        mainActivity.connectedToRack = false;
+                        mainActivity.StartConnectionThread();
                     }
                     if(!newDefaultRainbowRate.equals(""))
                     {
-                        UtilitiesClass.SaveSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE", newDefaultRainbowRate);
+                        UtilitiesClass.getInstance().SaveSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE", newDefaultRainbowRate);
                         defaultRainbowRate.setHint(newDefaultRainbowRate);
                     }
                     Toaster.toast("Settings saved");
                     break;
 
                 case R.id.reconnectRackButton:
-                    if(!MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
-                        MainActivity.StartConnectionThread();
+                    if(!mainActivity.connectedToRack && mainActivity.IsConnectedToWiFi())
+                        mainActivity.StartConnectionThread();
                     break;
 
                 case R.id.reconnectP1Button:
-                    if(MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
-                        new MainActivity.SendDataToServerAsync().execute("p1-connect");
+                    if(mainActivity.connectedToRack && mainActivity.IsConnectedToWiFi())
+                        new Thread(new SendDataThread("p1-connect", mainActivity)).start();
                     break;
 
                 case R.id.reconnectP2Button:
-                    if(MainActivity.connectedToRack && MainActivity.IsConnectedToWiFi())
-                        new MainActivity.SendDataToServerAsync().execute("p2-connect");
+                    if(mainActivity.connectedToRack && mainActivity.IsConnectedToWiFi())
+                        new Thread(new SendDataThread("p2-connect", mainActivity)).start();
                     break;
                 case R.id.sendSshButton:
-                    if(!sshCommandLine.getText().toString().equals("") && !MainActivity.connectedToRack)
-                    UtilitiesClass.RunSSHCommand("192.168.1.40", "rack", "rackpcpassword", sshCommandLine.getText().toString());
+                    if(!sshCommandLine.getText().toString().equals("") && !mainActivity.connectedToRack)
+                        new Thread(new SSHCommandThread("192.168.1.40", "rack", "rackpcpassword", sshCommandLine.getText().toString())).start();
                     break;
             }
         }
