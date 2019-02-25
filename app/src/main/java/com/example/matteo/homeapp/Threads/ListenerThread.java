@@ -1,8 +1,7 @@
-package com.example.matteo.homeapp.Runnables;
+package com.example.matteo.homeapp.Threads;
 
 import android.util.Log;
 
-import com.example.matteo.homeapp.Interfaces.KillableRunnable;
 import com.example.matteo.homeapp.MainActivity;
 
 import java.io.BufferedReader;
@@ -11,7 +10,7 @@ import java.io.InputStreamReader;
 
 import xdroid.toaster.Toaster;
 
-public class ListenerThread implements KillableRunnable
+public class ListenerThread extends Thread
 {
     private boolean stop = false;
     private MainActivity mainActivity;
@@ -21,20 +20,21 @@ public class ListenerThread implements KillableRunnable
     public ListenerThread(MainActivity mainActivity)
     {
         this.mainActivity = mainActivity;
-        if(mainActivity.rackSocket != null)
+        if(this.mainActivity.rackSocket != null)
             try{ inFromCabinet = new BufferedReader(new InputStreamReader(mainActivity.rackSocket.getInputStream())); } catch (Exception e) {}
     }
 
     @Override
     public void run()
     {
-        while(!stop)
+        while (!stop)
         {
-            Log.d("Listening", "LISTENER");
+            if (Thread.interrupted())
+                return;
             try
             {
                 serverResponse = inFromCabinet.readLine();
-                if(serverResponse != null)
+                if (serverResponse != null)
                 {
                     serverResponse = serverResponse.toLowerCase();
                     CheckCommandToExecute();
@@ -56,7 +56,7 @@ public class ListenerThread implements KillableRunnable
                     }
                 });
                 try { mainActivity.rackSocket.close(); } catch (final Exception e) { }
-                mainActivity.connectedToRack = false;
+                mainActivity.setConnectedToRack(false);
                 stop = true;
                 break;
 
@@ -83,9 +83,4 @@ public class ListenerThread implements KillableRunnable
                 break;
         }
     }
-
-    @Override
-    public void kill() {stop = true;}
-    @Override
-    public boolean isRunning() {return !stop;}
 }

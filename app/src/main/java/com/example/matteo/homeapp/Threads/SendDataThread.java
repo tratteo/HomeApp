@@ -1,8 +1,8 @@
-package com.example.matteo.homeapp.Runnables;
+package com.example.matteo.homeapp.Threads;
 
 import com.example.matteo.homeapp.MainActivity;
 
-public class SendDataThread implements Runnable
+public class SendDataThread extends Thread
 {
     private boolean succeded;
     private String message;
@@ -12,10 +12,13 @@ public class SendDataThread implements Runnable
         this.message = message;
         this.mainActivity = mainActivity;
     }
+
     @Override
     public void run()
     {
-        if(mainActivity.connectedToRack)
+        if(Thread.interrupted())
+            return;
+        if(mainActivity.isConnectedToRack())
         {
             try
             {
@@ -27,7 +30,7 @@ public class SendDataThread implements Runnable
             if(succeded)
             {
                 if (message.equals("disconnecting"))
-                    mainActivity.connectedToRack = false;
+                    mainActivity.setConnectedToRack(false);
             }
         }
     }

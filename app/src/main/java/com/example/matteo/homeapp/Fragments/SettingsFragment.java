@@ -11,11 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.matteo.homeapp.Fragments.Pi2Fragment;
 import com.example.matteo.homeapp.MainActivity;
 import com.example.matteo.homeapp.R;
-import com.example.matteo.homeapp.Runnables.SSHCommandThread;
-import com.example.matteo.homeapp.Runnables.SendDataThread;
+import com.example.matteo.homeapp.Threads.SSHCommandThread;
+import com.example.matteo.homeapp.Threads.SendDataThread;
 import com.example.matteo.homeapp.UtilitiesClass;
 
 import xdroid.toaster.Toaster;
@@ -81,7 +80,7 @@ public class SettingsFragment extends Fragment
                         UtilitiesClass.getInstance().SaveSharedPreferencesKey("settings", "RACK_IP", newRackIP);
                         rackIPText.setHint(newRackIP);
                         mainActivity.rackIP = newRackIP;
-                        mainActivity.connectedToRack = false;
+                        mainActivity.setConnectedToRack(false);
                         mainActivity.StartConnectionThread();
                     }
                     if(!newRackPort.equals(""))
@@ -89,7 +88,7 @@ public class SettingsFragment extends Fragment
                         UtilitiesClass.getInstance().SaveSharedPreferencesKey("settings", "RACK_PORT", newRackPort);
                         rackPortText.setHint(newRackPort);
                         mainActivity.rackPort = newRackPort;
-                        mainActivity.connectedToRack = false;
+                        mainActivity.setConnectedToRack(false);
                         mainActivity.StartConnectionThread();
                     }
                     if(!newDefaultRainbowRate.equals(""))
@@ -101,21 +100,21 @@ public class SettingsFragment extends Fragment
                     break;
 
                 case R.id.reconnectRackButton:
-                    if(!mainActivity.connectedToRack && mainActivity.IsConnectedToWiFi())
+                    if(!mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
                         mainActivity.StartConnectionThread();
                     break;
 
                 case R.id.reconnectP1Button:
-                    if(mainActivity.connectedToRack && mainActivity.IsConnectedToWiFi())
+                    if(mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
                         new Thread(new SendDataThread("p1-connect", mainActivity)).start();
                     break;
 
                 case R.id.reconnectP2Button:
-                    if(mainActivity.connectedToRack && mainActivity.IsConnectedToWiFi())
+                    if(mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
                         new Thread(new SendDataThread("p2-connect", mainActivity)).start();
                     break;
                 case R.id.sendSshButton:
-                    if(!sshCommandLine.getText().toString().equals("") && !mainActivity.connectedToRack)
+                    if(!sshCommandLine.getText().toString().equals("") && !mainActivity.isConnectedToRack())
                         new Thread(new SSHCommandThread("192.168.1.40", "rack", "rackpcpassword", sshCommandLine.getText().toString())).start();
                     break;
             }

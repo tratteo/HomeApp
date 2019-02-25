@@ -20,26 +20,28 @@ import com.example.matteo.homeapp.Fragments.Pi1Fragment;
 import com.example.matteo.homeapp.Fragments.Pi2Fragment;
 import com.example.matteo.homeapp.Fragments.RackFragment;
 import com.example.matteo.homeapp.Fragments.SettingsFragment;
-import com.example.matteo.homeapp.Runnables.ConnectionThread;
-import com.example.matteo.homeapp.Runnables.ListenerThread;
-import com.example.matteo.homeapp.Runnables.SendDataThread;
+import com.example.matteo.homeapp.Threads.ConnectionThread;
+import com.example.matteo.homeapp.Threads.SendDataThread;
 
 import java.io.PrintWriter;
 import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-    public ListenerThread listenerThread;
-    private ConnectionThread connectionThread;
+    public Thread connectionThread;
+    public Thread listenerThread;
     public TextView toolbarConnectionText;
     public String rackIP = "192.168.1.40";
     public String rackPort = "7777";
-    public boolean connectedToRack = false;
     public Socket rackSocket;
     public PrintWriter outToRack;
 
     private NavigationView navigationDrawer;
     private DrawerLayout drawerLayout;
+
+    private boolean connectedToRack = false;
+    public synchronized boolean isConnectedToRack() {return connectedToRack;}
+    public synchronized void setConnectedToRack(boolean connectedToRack) {this.connectedToRack = connectedToRack;}
 
     @Override
     protected void onStart()
@@ -48,7 +50,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         UtilitiesClass.getInstance().LoadAppPreferences();
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         registerReceiver(wifiStateReceiver, intentFilter);
+        StartConnectionThread();
     }
+
     @Override
     protected void onStop()
     {
@@ -56,19 +60,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         unregisterReceiver(wifiStateReceiver);
         try
         {
-            if(!connectedToRack)
-                connectionThread.kill();
-            new Thread(new SendDataThread("disconnecting", this)).start();
-            listenerThread.kill();
+            connectionThread.interrupt();
+            if(listenerThread != null)
+                listenerThread.interrupt();
+            new SendDataThread("disconnecting", this).start();
         }
         catch (Exception e) { }
-    }
-    @Override
-    protected void onRestart()
-    {
-        super.onRestart();
-        if(!connectedToRack)
-            StartConnectionThread();
     }
 
     @Override
@@ -90,12 +87,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         navigationDrawer.setNavigationItemSelectedListener(this);
 
-
         InflateFragment(new RackFragment());
         navigationDrawer.setCheckedItem(R.id.rack);
-
-        if(!connectedToRack)
-            StartConnectionThread();
     }
 
     @Override
@@ -151,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         toolbarConnectionText.setText("Trying to connect...");
         connectionThread = new ConnectionThread(this);
-        new Thread(connectionThread).start();
+        connectionThread.start();
     }
 
     public boolean IsConnectedToWiFi()
@@ -168,10 +161,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             switch(wifiStateExtra)
             {
                 case WifiManager.WIFI_STATE_DISABLED:
-                    if(connectionThread.isRunning())
-                        connectionThread.kill();
+                    /*if(!connectionThread.isInterrupted())
+                        connectionThread.interrupt();
                     toolbarConnectionText.setText("Activate Wi-Fi and retry");
-                    connectedToRack = false;
+                    connectedToRack = false;*/
                     break;
             }
         }

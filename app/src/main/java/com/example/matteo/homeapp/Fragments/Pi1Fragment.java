@@ -1,10 +1,8 @@
 package com.example.matteo.homeapp.Fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +11,8 @@ import android.widget.*;
 
 import com.example.matteo.homeapp.MainActivity;
 import com.example.matteo.homeapp.R;
-import com.example.matteo.homeapp.Runnables.SendDataThread;
+import com.example.matteo.homeapp.Threads.SendDataThread;
 import com.example.matteo.homeapp.UtilitiesClass;
-
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Pi1Fragment extends Fragment
 {
@@ -54,12 +47,12 @@ public class Pi1Fragment extends Fragment
             switch (v.getId())
             {
                 case R.id.windowPlugOnButton:
-                    if(mainActivity.connectedToRack)
-                        new Thread(new SendDataThread("p1-windowplug_on", mainActivity)).start();
+                    if(mainActivity.isConnectedToRack())
+                        new SendDataThread("p1-windowplug_on", mainActivity).start();
                     break;
                 case R.id.windowPlugOffButton:
-                    if(mainActivity.connectedToRack)
-                        new Thread(new SendDataThread("p1-windowplug_off", mainActivity)).start();
+                    if(mainActivity.isConnectedToRack())
+                        new SendDataThread("p1-windowplug_off", mainActivity).start();
                     break;
             }
         }

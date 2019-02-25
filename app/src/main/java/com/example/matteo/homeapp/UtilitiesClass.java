@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
 import com.example.matteo.homeapp.Fragments.Pi2Fragment;
-
 import java.util.Calendar;
 
 public class UtilitiesClass

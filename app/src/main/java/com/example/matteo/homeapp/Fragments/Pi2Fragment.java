@@ -1,6 +1,5 @@
 package com.example.matteo.homeapp.Fragments;
 
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,16 +15,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.matteo.homeapp.MainActivity;
 import com.example.matteo.homeapp.R;
-import com.example.matteo.homeapp.Runnables.SendDataThread;
+import com.example.matteo.homeapp.Threads.SendDataThread;
 import com.example.matteo.homeapp.UtilitiesClass;
 
 import java.io.PrintWriter;
@@ -112,18 +109,18 @@ public class Pi2Fragment extends Fragment
                 switch (seekBar.getId())
                 {
                     case R.id.rSeekBar:
-                        if (mainActivity.connectedToRack)
-                            new Thread(new SendDataThread("p2-r" + Integer.toString(progress), mainActivity)).start();
+                        if (mainActivity.isConnectedToRack())
+                            new SendDataThread("p2-r" + Integer.toString(progress), mainActivity).start();
                         rText.setText("R: " + Integer.toString(progress));
                         break;
                     case R.id.gSeekBar:
-                        if (mainActivity.connectedToRack)
-                            new Thread(new SendDataThread("p2-g" + Integer.toString(progress), mainActivity)).start();
+                        if (mainActivity.isConnectedToRack())
+                            new SendDataThread("p2-g" + Integer.toString(progress), mainActivity).start();
                         gText.setText("G: " + Integer.toString(progress));
                         break;
                     case R.id.bSeekBar:
-                        if (mainActivity.connectedToRack)
-                            new Thread(new SendDataThread("p2-b" + Integer.toString(progress), mainActivity)).start();
+                        if (mainActivity.isConnectedToRack())
+                            new SendDataThread("p2-b" + Integer.toString(progress), mainActivity).start();
                         bText.setText("B: " + Integer.toString(progress));
                         break;
                 }
@@ -158,47 +155,47 @@ public class Pi2Fragment extends Fragment
             switch(v.getId())
             {
                 case R.id.sendButton:
-                    if(mainActivity.connectedToRack && !commandLine.getText().equals(""))
+                    if(mainActivity.isConnectedToRack() && !commandLine.getText().equals(""))
                     {
                         if(commandLine.getText().toString().equals("Morning routine"))
                         {
                             String command1 = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(6, 25)) + "-rainbowstart500";
                             String command2 = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(7, 10)) + "-rainbowstop";
-                            new Thread(new SendDataThread(command1, mainActivity)).start();
-                            new Thread(new SendDataThread(command2, mainActivity)).start();
+                            new SendDataThread(command1, mainActivity).start();
+                            new SendDataThread(command2, mainActivity).start();
                         }
                         else
                         {
                             if (toggleTimerCheckBox.isChecked())
                             {
                                 String commandString = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText();
-                                new Thread(new SendDataThread(commandString, mainActivity)).start();
+                                new SendDataThread(commandString, mainActivity).start();
                             }
                             else
-                                new Thread(new SendDataThread("p2-" + commandLine.getText(), mainActivity)).start();
+                                new SendDataThread("p2-" + commandLine.getText(), mainActivity).start();
                         }
                     }
                     break;
 
                 case R.id.ledOnButton:
-                    if(mainActivity.connectedToRack)
+                    if(mainActivity.isConnectedToRack())
                     {
-                        new Thread(new SendDataThread("p2-on", mainActivity)).start();
+                        new SendDataThread("p2-on", mainActivity).start();
                     }
                     break;
 
                 case R.id.ledOffButton:
-                    if(mainActivity.connectedToRack)
+                    if(mainActivity.isConnectedToRack())
                     {
-                        new Thread(new SendDataThread("p2-off", mainActivity)).start();
+                        new SendDataThread("p2-off", mainActivity).start();
                     }
                     break;
 
                 case R.id.rainbowButton:
-                    if (mainActivity.connectedToRack)
+                    if (mainActivity.isConnectedToRack())
                     {
                         String rate = UtilitiesClass.getInstance().GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE");
-                        new Thread(new SendDataThread("p2-rainbowstart" + rate, mainActivity)).start();
+                        new SendDataThread("p2-rainbowstart" + rate, mainActivity).start();
                     }
                     break;
                 case R.id.deleteCommandLineButton:
