@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.helper.ItemTouchUIUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import android.widget.*;
 
 import com.example.matteo.homeapp.MainActivity;
 import com.example.matteo.homeapp.R;
-import com.example.matteo.homeapp.Threads.SendDataThread;
+import com.example.matteo.homeapp.Runnables.SendDataRunnable;
 import com.example.matteo.homeapp.UtilitiesClass;
 
 public class Pi1Fragment extends Fragment
@@ -48,11 +49,11 @@ public class Pi1Fragment extends Fragment
             {
                 case R.id.windowPlugOnButton:
                     if(mainActivity.isConnectedToRack())
-                        new SendDataThread("p1-windowplug_on", mainActivity).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p1-windowplug_on", mainActivity));
                     break;
                 case R.id.windowPlugOffButton:
                     if(mainActivity.isConnectedToRack())
-                        new SendDataThread("p1-windowplug_off", mainActivity).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p1-windowplug_off", mainActivity));
                     break;
             }
         }

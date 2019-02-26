@@ -1,17 +1,20 @@
-package com.example.matteo.homeapp.Threads;
+package com.example.matteo.homeapp.Runnables;
 
 import android.util.Log;
 
+import com.example.matteo.homeapp.Interfaces.KillableRunnable;
 import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.UtilitiesClass;
+
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-public class ConnectionThread extends Thread
+public class ConnectionRunnable implements KillableRunnable
 {
-    private boolean stop = false;
+    private boolean stop = false, succeded = false;
     private MainActivity mainActivity;
-    public ConnectionThread(MainActivity mainActivity)
+    public ConnectionRunnable(MainActivity mainActivity)
     {
         this.mainActivity = mainActivity;
     }
@@ -21,19 +24,19 @@ public class ConnectionThread extends Thread
     {
         while (!stop)
         {
+            Log.d("DEBUGGING","running");
+            try{Thread.sleep(200);} catch (InterruptedException ignored){}
             try
             {
                 InetSocketAddress socketAddress = new InetSocketAddress(mainActivity.rackIP, Integer.parseInt(mainActivity.rackPort));
                 mainActivity.rackSocket = new Socket();
                 mainActivity.rackSocket.connect(socketAddress, 500);
                 mainActivity.outToRack = new PrintWriter(mainActivity.rackSocket.getOutputStream());
-                stop = true;
+                succeded = true;
             }
-            catch (Exception e)
-            {
-                stop = false;
-            }
-            if (stop)
+            catch (Exception e) {succeded = false;}
+
+            if (succeded)
             {
                 mainActivity.setConnectedToRack(true);
                 final String ipString = mainActivity.rackSocket.getInetAddress().toString().substring(1);
@@ -43,12 +46,20 @@ public class ConnectionThread extends Thread
                         mainActivity.toolbarConnectionText.setText("Connected to: " + ipString);
                     }
                 });
-                if (mainActivity.listenerThread != null)
-                    mainActivity.listenerThread.interrupt();
-                mainActivity.listenerThread = new ListenerThread(mainActivity);
-                mainActivity.listenerThread.start();
+                if (mainActivity.listenerRunnable != null)
+                    mainActivity.listenerRunnable.kill();
+                mainActivity.listenerRunnable = new ListenerRunnable(mainActivity);
+                UtilitiesClass.getInstance().executeRunnable(mainActivity.listenerRunnable);
+                return;
             }
-            try{Thread.sleep(1000);} catch (InterruptedException e){return;}
+            else
+                try{Thread.sleep(800);} catch (InterruptedException ignored){}
         }
     }
+
+    @Override
+    public boolean isRunning() {return !stop;}
+
+    @Override
+    public void kill() {stop = true;}
 }

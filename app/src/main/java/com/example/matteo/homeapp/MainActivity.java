@@ -20,16 +20,17 @@ import com.example.matteo.homeapp.Fragments.Pi1Fragment;
 import com.example.matteo.homeapp.Fragments.Pi2Fragment;
 import com.example.matteo.homeapp.Fragments.RackFragment;
 import com.example.matteo.homeapp.Fragments.SettingsFragment;
-import com.example.matteo.homeapp.Threads.ConnectionThread;
-import com.example.matteo.homeapp.Threads.SendDataThread;
+import com.example.matteo.homeapp.Runnables.ConnectionRunnable;
+import com.example.matteo.homeapp.Runnables.ListenerRunnable;
+import com.example.matteo.homeapp.Runnables.SendDataRunnable;
 
 import java.io.PrintWriter;
 import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-    public Thread connectionThread;
-    public Thread listenerThread;
+    private ConnectionRunnable connectionRunnable = null;
+    public ListenerRunnable listenerRunnable;
     public TextView toolbarConnectionText;
     public String rackIP = "192.168.1.40";
     public String rackPort = "7777";
@@ -46,11 +47,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart()
     {
-        super.onStart();
-        UtilitiesClass.getInstance().LoadAppPreferences();
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         registerReceiver(wifiStateReceiver, intentFilter);
-        StartConnectionThread();
+        super.onStart();
+        UtilitiesClass.getInstance().LoadAppPreferences();
+        if(IsConnectedToWiFi())
+            StartConnectionThread();
     }
 
     @Override
@@ -58,14 +60,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         super.onStop();
         unregisterReceiver(wifiStateReceiver);
-        try
-        {
-            connectionThread.interrupt();
-            if(listenerThread != null)
-                listenerThread.interrupt();
-            new SendDataThread("disconnecting", this).start();
-        }
-        catch (Exception e) { }
+
+        if(connectionRunnable != null && connectionRunnable.isRunning())
+            connectionRunnable.kill();
+
+        if(listenerRunnable != null)
+            if(listenerRunnable.isRunning())
+                listenerRunnable.kill();
+
+        if(connectedToRack)
+            UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("disconnecting", this));
     }
 
     @Override
@@ -143,8 +147,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void StartConnectionThread()
     {
         toolbarConnectionText.setText("Trying to connect...");
-        connectionThread = new ConnectionThread(this);
-        connectionThread.start();
+        connectionRunnable = new ConnectionRunnable(this);
+        UtilitiesClass.getInstance().executeRunnable(connectionRunnable);
     }
 
     public boolean IsConnectedToWiFi()
@@ -156,15 +160,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BroadcastReceiver wifiStateReceiver = new BroadcastReceiver()
     {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
             int wifiStateExtra = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
             switch(wifiStateExtra)
             {
                 case WifiManager.WIFI_STATE_DISABLED:
-                    /*if(!connectionThread.isInterrupted())
-                        connectionThread.interrupt();
+                    if(connectionRunnable != null && !connectionRunnable.isRunning())
+                        connectionRunnable.kill();
                     toolbarConnectionText.setText("Activate Wi-Fi and retry");
-                    connectedToRack = false;*/
+                    connectedToRack = false;
                     break;
             }
         }

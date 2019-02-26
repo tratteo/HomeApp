@@ -12,8 +12,8 @@ import android.widget.*;
 
 import com.example.matteo.homeapp.MainActivity;
 import com.example.matteo.homeapp.R;
-import com.example.matteo.homeapp.Threads.SSHCommandThread;
-import com.example.matteo.homeapp.Threads.SendDataThread;
+import com.example.matteo.homeapp.Runnables.SSHCommandRunnable;
+import com.example.matteo.homeapp.Runnables.SendDataRunnable;
 import com.example.matteo.homeapp.UtilitiesClass;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class RackFragment extends Fragment
             {
                 case R.id.sendDataToRack:
                     if(mainActivity.isConnectedToRack() && !rackCommandLine.getText().equals(""))
-                        new SendDataThread("rack-" + rackCommandLine.getText(), mainActivity).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("rack-" + rackCommandLine.getText(), mainActivity));
                     break;
                 case R.id.deleteCommandLineButton:
                     rackCommandLine.setText("");
@@ -83,15 +83,19 @@ public class RackFragment extends Fragment
 
                 case R.id.launchServerButton:
                     if(!mainActivity.isConnectedToRack())
-                        new SSHCommandThread("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar").start();
+                    {
+                        SSHCommandRunnable sshRunnable = new SSHCommandRunnable("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar");
+                        UtilitiesClass.getInstance().executeRunnable(sshRunnable);
+                    }
                     break;
 
                 case R.id.closeServerButton:
                     if(mainActivity.isConnectedToRack())
-                        new SendDataThread("rack-close server", mainActivity).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("rack-close server", mainActivity));
                     break;
                 case R.id.suspendRackButton:
-                    new SSHCommandThread("192.168.1.40", "rack", "rackpcpassword", "echo rackpcpassword | sudo -S systemctl suspend").start();
+                    SSHCommandRunnable sshRunnable = new SSHCommandRunnable("192.168.1.40", "rack", "rackpcpassword", "echo rackpcpassword | sudo -S systemctl suspend");
+                    UtilitiesClass.getInstance().executeRunnable(sshRunnable);
                     break;
             }
         }
@@ -125,10 +129,7 @@ public class RackFragment extends Fragment
             @Override
             public boolean isEnabled(int position)
             {
-                if(position == 0)
-                    return false;
-                else
-                    return true;
+                return position != 0;
             }
             @Override
             public View getDropDownView(int position, View convertView, ViewGroup parent)

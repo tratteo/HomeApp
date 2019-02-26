@@ -13,8 +13,8 @@ import android.widget.EditText;
 
 import com.example.matteo.homeapp.MainActivity;
 import com.example.matteo.homeapp.R;
-import com.example.matteo.homeapp.Threads.SSHCommandThread;
-import com.example.matteo.homeapp.Threads.SendDataThread;
+import com.example.matteo.homeapp.Runnables.SSHCommandRunnable;
+import com.example.matteo.homeapp.Runnables.SendDataRunnable;
 import com.example.matteo.homeapp.UtilitiesClass;
 
 import xdroid.toaster.Toaster;
@@ -106,16 +106,16 @@ public class SettingsFragment extends Fragment
 
                 case R.id.reconnectP1Button:
                     if(mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
-                        new Thread(new SendDataThread("p1-connect", mainActivity)).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p1-connect", mainActivity));
                     break;
 
                 case R.id.reconnectP2Button:
                     if(mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
-                        new Thread(new SendDataThread("p2-connect", mainActivity)).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-connect", mainActivity));
                     break;
                 case R.id.sendSshButton:
                     if(!sshCommandLine.getText().toString().equals("") && !mainActivity.isConnectedToRack())
-                        new Thread(new SSHCommandThread("192.168.1.40", "rack", "rackpcpassword", sshCommandLine.getText().toString())).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SSHCommandRunnable("192.168.1.40", "rack", "rackpcpassword", sshCommandLine.getText().toString()));
                     break;
             }
         }

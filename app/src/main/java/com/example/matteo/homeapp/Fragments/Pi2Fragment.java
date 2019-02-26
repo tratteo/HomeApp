@@ -22,7 +22,7 @@ import android.widget.TimePicker;
 
 import com.example.matteo.homeapp.MainActivity;
 import com.example.matteo.homeapp.R;
-import com.example.matteo.homeapp.Threads.SendDataThread;
+import com.example.matteo.homeapp.Runnables.SendDataRunnable;
 import com.example.matteo.homeapp.UtilitiesClass;
 
 import java.io.PrintWriter;
@@ -40,8 +40,8 @@ public class Pi2Fragment extends Fragment
         "Morning routine"
     };
 
-    static SeekBar rSeekBar, gSeekBar, bSeekBar;
-    static TextView rText, gText, bText;
+    SeekBar rSeekBar, gSeekBar, bSeekBar;
+    TextView rText, gText, bText;
     Spinner p2CommandsSpinner;
     FloatingActionButton deleteCommandLineButton;
     CheckBox toggleTimerCheckBox;
@@ -96,7 +96,7 @@ public class Pi2Fragment extends Fragment
         toggleTimerCheckBox.setOnCheckedChangeListener(toggleTimerCheckBoxListener);
 
         if(mainActivity.rackSocket != null)
-            try{ outToRack = new PrintWriter(mainActivity.rackSocket.getOutputStream());} catch (Exception e) {}
+            try{ outToRack = new PrintWriter(mainActivity.rackSocket.getOutputStream());} catch (Exception ignored) {}
     }
 
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener()
@@ -110,17 +110,17 @@ public class Pi2Fragment extends Fragment
                 {
                     case R.id.rSeekBar:
                         if (mainActivity.isConnectedToRack())
-                            new SendDataThread("p2-r" + Integer.toString(progress), mainActivity).start();
+                            UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-r" + Integer.toString(progress), mainActivity));
                         rText.setText("R: " + Integer.toString(progress));
                         break;
                     case R.id.gSeekBar:
                         if (mainActivity.isConnectedToRack())
-                            new SendDataThread("p2-g" + Integer.toString(progress), mainActivity).start();
+                            UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-g" + Integer.toString(progress), mainActivity));
                         gText.setText("G: " + Integer.toString(progress));
                         break;
                     case R.id.bSeekBar:
                         if (mainActivity.isConnectedToRack())
-                            new SendDataThread("p2-b" + Integer.toString(progress), mainActivity).start();
+                            UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-b" + Integer.toString(progress), mainActivity));
                         bText.setText("B: " + Integer.toString(progress));
                         break;
                 }
@@ -161,18 +161,18 @@ public class Pi2Fragment extends Fragment
                         {
                             String command1 = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(6, 25)) + "-rainbowstart500";
                             String command2 = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(7, 10)) + "-rainbowstop";
-                            new SendDataThread(command1, mainActivity).start();
-                            new SendDataThread(command2, mainActivity).start();
+                            UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable(command1, mainActivity));
+                            UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable(command2, mainActivity));
                         }
                         else
                         {
                             if (toggleTimerCheckBox.isChecked())
                             {
                                 String commandString = "p2-t" + Integer.toString(UtilitiesClass.getInstance().GetSecondsFromHoursAndMinutes(timerSetter.getHour(), timerSetter.getMinute())) + "-" + commandLine.getText();
-                                new SendDataThread(commandString, mainActivity).start();
+                                UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable(commandString, mainActivity));
                             }
                             else
-                                new SendDataThread("p2-" + commandLine.getText(), mainActivity).start();
+                                UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-" + commandLine.getText(), mainActivity));
                         }
                     }
                     break;
@@ -180,14 +180,14 @@ public class Pi2Fragment extends Fragment
                 case R.id.ledOnButton:
                     if(mainActivity.isConnectedToRack())
                     {
-                        new SendDataThread("p2-on", mainActivity).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-on", mainActivity));
                     }
                     break;
 
                 case R.id.ledOffButton:
                     if(mainActivity.isConnectedToRack())
                     {
-                        new SendDataThread("p2-off", mainActivity).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-off", mainActivity));
                     }
                     break;
 
@@ -195,7 +195,7 @@ public class Pi2Fragment extends Fragment
                     if (mainActivity.isConnectedToRack())
                     {
                         String rate = UtilitiesClass.getInstance().GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE");
-                        new SendDataThread("p2-rainbowstart" + rate, mainActivity).start();
+                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-rainbowstart" + rate, mainActivity));
                     }
                     break;
                 case R.id.deleteCommandLineButton:
@@ -230,10 +230,7 @@ public class Pi2Fragment extends Fragment
             @Override
             public boolean isEnabled(int position)
             {
-                if(position == 0)
-                    return false;
-                else
-                    return true;
+                return position != 0;
             }
             @Override
             public View getDropDownView(int position, View convertView, ViewGroup parent)
@@ -252,7 +249,7 @@ public class Pi2Fragment extends Fragment
         p2CommandsSpinner.setAdapter(rackCommandsSpinnerAdapter);
     }
 
-    public static void ChangeProgressBarsValue(int value)
+    public void ChangeProgressBarsValue(int value)
     {
         rSeekBar.setProgress(value, true);
         rText.setText("R: " + Integer.toString(value));

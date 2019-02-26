@@ -1,27 +1,24 @@
-package com.example.matteo.homeapp.Threads;
+package com.example.matteo.homeapp.Runnables;
 
-import android.util.Log;
-
+import com.example.matteo.homeapp.Interfaces.KillableRunnable;
 import com.example.matteo.homeapp.MainActivity;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import xdroid.toaster.Toaster;
 
-public class ListenerThread extends Thread
+public class ListenerRunnable implements KillableRunnable
 {
     private boolean stop = false;
     private MainActivity mainActivity;
     private BufferedReader inFromCabinet;
     private String serverResponse;
 
-    public ListenerThread(MainActivity mainActivity)
+    ListenerRunnable(MainActivity mainActivity)
     {
         this.mainActivity = mainActivity;
         if(this.mainActivity.rackSocket != null)
-            try{ inFromCabinet = new BufferedReader(new InputStreamReader(mainActivity.rackSocket.getInputStream())); } catch (Exception e) {}
+            try{ inFromCabinet = new BufferedReader(new InputStreamReader(mainActivity.rackSocket.getInputStream())); } catch (Exception ignored) {}
     }
 
     @Override
@@ -29,8 +26,6 @@ public class ListenerThread extends Thread
     {
         while (!stop)
         {
-            if (Thread.interrupted())
-                return;
             try
             {
                 serverResponse = inFromCabinet.readLine();
@@ -39,7 +34,7 @@ public class ListenerThread extends Thread
                     serverResponse = serverResponse.toLowerCase();
                     CheckCommandToExecute();
                 }
-            } catch (IOException ex) {}
+            } catch (IOException ignored) {}
         }
     }
 
@@ -55,7 +50,7 @@ public class ListenerThread extends Thread
                         mainActivity.toolbarConnectionText.setText("Connection interrupted from server");
                     }
                 });
-                try { mainActivity.rackSocket.close(); } catch (final Exception e) { }
+                try { mainActivity.rackSocket.close(); } catch (final Exception ignored) { }
                 mainActivity.setConnectedToRack(false);
                 stop = true;
                 break;
@@ -83,4 +78,9 @@ public class ListenerThread extends Thread
                 break;
         }
     }
+
+    @Override
+    public boolean isRunning() {return !stop;}
+    @Override
+    public void kill() {stop = true;}
 }

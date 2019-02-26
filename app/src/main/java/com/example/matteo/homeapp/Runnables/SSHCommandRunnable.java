@@ -1,4 +1,4 @@
-package com.example.matteo.homeapp.Threads;
+package com.example.matteo.homeapp.Runnables;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -9,10 +9,10 @@ import java.util.Properties;
 
 import xdroid.toaster.Toaster;
 
-public class SSHCommandThread extends Thread
+public class SSHCommandRunnable implements Runnable
 {
     private String IP, username, password, command;
-    public SSHCommandThread(String IP, String username, String password, String command)
+    public SSHCommandRunnable(String IP, String username, String password, String command)
     {
         this.IP = IP;
         this.username = username;
@@ -23,8 +23,6 @@ public class SSHCommandThread extends Thread
     @Override
     public void run()
     {
-        if(Thread.interrupted())
-            return;
         try
         {
             Properties config = new Properties();
@@ -38,7 +36,7 @@ public class SSHCommandThread extends Thread
             ChannelExec channel = (ChannelExec)session.openChannel("exec");
             channel.setCommand(command);
             channel.connect();
-            try{Thread.sleep(500 );}catch(Exception e){}
+            try{Thread.sleep(500 );}catch(Exception ignored){}
             channel.disconnect();
         }
         catch(JSchException e)

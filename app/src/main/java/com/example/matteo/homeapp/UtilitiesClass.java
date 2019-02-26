@@ -9,7 +9,6 @@ import java.util.Calendar;
 
 public class UtilitiesClass
 {
-    private MainActivity mainActivity;
     private static UtilitiesClass instance;
     public static UtilitiesClass getInstance()
     {
@@ -18,7 +17,16 @@ public class UtilitiesClass
         return instance;
     }
 
-    public void setMainActivity(MainActivity mainActivity) {this.mainActivity = mainActivity;}
+    private MainActivity mainActivity;
+    void setMainActivity(MainActivity mainActivity) {this.mainActivity = mainActivity;}
+
+
+    public Thread executeRunnable(Runnable runnable)
+    {
+        Thread thread = new Thread(runnable);
+        thread.start();
+        return thread;
+    }
 
     public int GetSecondsFromHoursAndMinutes(int pickerHour, int pickerMinute)
     {
@@ -38,7 +46,8 @@ public class UtilitiesClass
     public void HideSoftInputKeyboard(View v)
     {
         InputMethodManager inputMethodManager = (InputMethodManager)mainActivity.getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+        if(inputMethodManager != null)
+            inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     public void SaveSharedPreferencesKey(String sharedPreference, String key, String value)
