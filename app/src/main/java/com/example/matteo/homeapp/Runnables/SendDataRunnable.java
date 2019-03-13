@@ -1,6 +1,6 @@
 package com.example.matteo.homeapp.Runnables;
 
-import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.HomeApp.MainActivity;
 
 public class SendDataRunnable implements Runnable
 {

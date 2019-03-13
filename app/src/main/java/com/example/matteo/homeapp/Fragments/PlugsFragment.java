@@ -4,18 +4,17 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.helper.ItemTouchUIUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
-import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.HomeApp.MainActivity;
 import com.example.matteo.homeapp.R;
 import com.example.matteo.homeapp.Runnables.SendDataRunnable;
-import com.example.matteo.homeapp.UtilitiesClass;
+import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
 
-public class Pi1Fragment extends Fragment
+public class PlugsFragment extends Fragment
 {
     MainActivity mainActivity;
     Button windowPlugOnButton, windowPlugOffButton;
@@ -25,7 +24,7 @@ public class Pi1Fragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         mainActivity = (MainActivity) getActivity();
-        return inflater.inflate(R.layout.fragmentpi1_layout, null);
+        return inflater.inflate(R.layout.fragment_plugs, null);
     }
 
     @Override
@@ -49,11 +48,11 @@ public class Pi1Fragment extends Fragment
             {
                 case R.id.windowPlugOnButton:
                     if(mainActivity.isConnectedToRack())
-                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p1-windowplug_on", mainActivity));
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("p1-windowplug_on", mainActivity));
                     break;
                 case R.id.windowPlugOffButton:
                     if(mainActivity.isConnectedToRack())
-                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p1-windowplug_off", mainActivity));
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("p1-windowplug_off", mainActivity));
                     break;
             }
         }

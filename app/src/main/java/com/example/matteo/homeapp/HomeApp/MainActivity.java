@@ -1,4 +1,4 @@
-package com.example.matteo.homeapp;
+package com.example.matteo.homeapp.HomeApp;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,10 +16,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.example.matteo.homeapp.Fragments.Pi1Fragment;
-import com.example.matteo.homeapp.Fragments.Pi2Fragment;
+import com.example.matteo.homeapp.Fragments.InfoFragment;
+import com.example.matteo.homeapp.Fragments.PlugsFragment;
+import com.example.matteo.homeapp.Fragments.LEDFragment;
 import com.example.matteo.homeapp.Fragments.RackFragment;
 import com.example.matteo.homeapp.Fragments.SettingsFragment;
+import com.example.matteo.homeapp.R;
 import com.example.matteo.homeapp.Runnables.ConnectionRunnable;
 import com.example.matteo.homeapp.Runnables.ListenerRunnable;
 import com.example.matteo.homeapp.Runnables.SendDataRunnable;
@@ -36,6 +38,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public String rackPort = "7777";
     public Socket rackSocket;
     public PrintWriter outToRack;
+
+    //Inflated fragments
+    public RackFragment rackFragment;
+    public LEDFragment ledFragment;
+    public PlugsFragment plugsFragment;
+    public SettingsFragment settingsFragment;
+    public InfoFragment infoFragment;
 
     private NavigationView navigationDrawer;
     private DrawerLayout drawerLayout;
@@ -69,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 listenerRunnable.kill();
 
         if(connectedToRack)
-            UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("disconnecting", this));
+            UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("disconnecting", this));
     }
 
     @Override
@@ -108,11 +117,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void InflateFragment(Fragment _fragment)
+    public void InflateFragment(Fragment fragment)
     {
         FragmentManager fragManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout, _fragment);
+        fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
 
@@ -125,15 +134,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             case R.id.rack:
                 fragment = new RackFragment();
+                rackFragment = (RackFragment)fragment;
                 break;
-            case R.id.pi1:
-                fragment = new Pi1Fragment();
+            case R.id.plugs:
+                fragment = new PlugsFragment();
+                plugsFragment = (PlugsFragment)fragment;
                 break;
-            case R.id.pi2:
-                fragment = new Pi2Fragment();
+            case R.id.led:
+                fragment = new LEDFragment();
+                ledFragment = (LEDFragment)fragment;
                 break;
             case R.id.settings:
                 fragment = new SettingsFragment();
+                settingsFragment = (SettingsFragment)fragment;
+                break;
+            case R.id.info:
+                fragment = new InfoFragment();
+                infoFragment = (InfoFragment)fragment;
                 break;
         }
         if (fragment != null)
@@ -148,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         toolbarConnectionText.setText("Trying to connect...");
         connectionRunnable = new ConnectionRunnable(this);
-        UtilitiesClass.getInstance().executeRunnable(connectionRunnable);
+        UtilitiesClass.getInstance().ExecuteRunnable(connectionRunnable);
     }
 
     public boolean IsConnectedToWiFi()
@@ -166,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             switch(wifiStateExtra)
             {
                 case WifiManager.WIFI_STATE_DISABLED:
-                    if(connectionRunnable != null && !connectionRunnable.isRunning())
+                    if(connectionRunnable != null && connectionRunnable.isRunning())
                         connectionRunnable.kill();
                     toolbarConnectionText.setText("Activate Wi-Fi and retry");
                     connectedToRack = false;

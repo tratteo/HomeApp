@@ -11,20 +11,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.HomeApp.MainActivity;
 import com.example.matteo.homeapp.R;
 import com.example.matteo.homeapp.Runnables.SSHCommandRunnable;
 import com.example.matteo.homeapp.Runnables.SendDataRunnable;
-import com.example.matteo.homeapp.UtilitiesClass;
+import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
 
 import xdroid.toaster.Toaster;
 
 public class SettingsFragment extends Fragment
 {
     private MainActivity mainActivity;
-    EditText rackIPText, rackPortText, sshCommandLine, defaultRainbowRate;
+    EditText rackIPText, rackPortText, defaultRainbowRate;
     FloatingActionButton saveSettingsButton;
-    Button reconnectRackButton, reconnectP1Button, reconnectP2Button, sendSSHButton;
+    Button reconnectRackButton, reconnectP1Button, reconnectP2Button;
 
     @Nullable
     @Override
@@ -40,19 +40,16 @@ public class SettingsFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         UtilitiesClass.getInstance().HideSoftInputKeyboard(getView());
 
-        sendSSHButton = getView().findViewById(R.id.sendSshButton);
         reconnectRackButton = getView().findViewById(R.id.reconnectRackButton);
         reconnectP1Button = getView().findViewById(R.id.reconnectP1Button);
         reconnectP2Button = getView().findViewById(R.id.reconnectP2Button);
 
         defaultRainbowRate = getView().findViewById(R.id.defaultRainbowRateText);
-        sshCommandLine = getView().findViewById(R.id.sshCommandLine);
         saveSettingsButton = getView().findViewById(R.id.saveSettingsButton);
 
         rackIPText = getView().findViewById(R.id.rack_ip);
         rackPortText = getView().findViewById(R.id.rack_port);
 
-        sendSSHButton.setOnClickListener(clickListener);
         saveSettingsButton.setOnClickListener(clickListener);
         reconnectRackButton.setOnClickListener(clickListener);
         reconnectP1Button.setOnClickListener(clickListener);
@@ -61,7 +58,7 @@ public class SettingsFragment extends Fragment
         UtilitiesClass.getInstance().LoadAppPreferences();
         rackIPText.setHint(mainActivity.rackIP);
         rackPortText.setHint(mainActivity.rackPort);
-        defaultRainbowRate.setHint(Pi2Fragment.defaultRainbowRate);
+        defaultRainbowRate.setHint(LEDFragment.defaultRainbowRate);
     }
 
     private View.OnClickListener clickListener = new View.OnClickListener()
@@ -106,16 +103,12 @@ public class SettingsFragment extends Fragment
 
                 case R.id.reconnectP1Button:
                     if(mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
-                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p1-connect", mainActivity));
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("p1-connect", mainActivity));
                     break;
 
                 case R.id.reconnectP2Button:
                     if(mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
-                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("p2-connect", mainActivity));
-                    break;
-                case R.id.sendSshButton:
-                    if(!sshCommandLine.getText().toString().equals("") && !mainActivity.isConnectedToRack())
-                        UtilitiesClass.getInstance().executeRunnable(new SSHCommandRunnable("192.168.1.40", "rack", "rackpcpassword", sshCommandLine.getText().toString()));
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("p2-connect", mainActivity));
                     break;
             }
         }

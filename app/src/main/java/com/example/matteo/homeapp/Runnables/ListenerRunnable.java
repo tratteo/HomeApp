@@ -1,7 +1,9 @@
 package com.example.matteo.homeapp.Runnables;
 
 import com.example.matteo.homeapp.Interfaces.KillableRunnable;
-import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.HomeApp.MainActivity;
+import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -40,17 +42,39 @@ public class ListenerRunnable implements KillableRunnable
 
     private void CheckCommandToExecute()
     {
-        switch (serverResponse)
+        //serverResponse is temperature
+        if(UtilitiesClass.getInstance().IsStringFloatConvertible(serverResponse))
         {
+            if(mainActivity.infoFragment != null && !serverResponse.equals(null))
+            {
+                mainActivity.infoFragment.temperatureTextView.post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        mainActivity.infoFragment.temperatureTextView.setText(serverResponse + "°");
+                        mainActivity.infoFragment.temperatureTextView.setTextColor(UtilitiesClass.getInstance().GetColorFromTemperature(Float.parseFloat(serverResponse)));
+                    }
+                });
+            }
+        }
+        else
+        {
+            switch (serverResponse)
+            {
             case "serverdown":
 
-                mainActivity.toolbarConnectionText.post(new Runnable() {
+                mainActivity.toolbarConnectionText.post(new Runnable()
+                {
                     @Override
-                    public void run() {
+                    public void run()
+                    {
                         mainActivity.toolbarConnectionText.setText("Connection interrupted from server");
                     }
                 });
+
                 try { mainActivity.rackSocket.close(); } catch (final Exception ignored) { }
+
                 mainActivity.setConnectedToRack(false);
                 stop = true;
                 break;
@@ -76,6 +100,7 @@ public class ListenerRunnable implements KillableRunnable
             case "p2-rainbowrunning":
                 Toaster.toast("Rainbow thread is running on P2");
                 break;
+        }
         }
     }
 

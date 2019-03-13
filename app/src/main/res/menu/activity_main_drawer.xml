@@ -3,36 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group
-        android:id="@+id/menu_top">
-        <item
-            android:title="Devices">
-            <menu>
-                <group android:checkableBehavior="single">
-                    <item
-                        android:id="@+id/rack"
-                        android:icon="@drawable/ic_baseline_computer_24px"
-                        android:title="Rack"/>
-                    <item
-                        android:id="@+id/pi1"
-                        android:icon="@drawable/ic_baseline_developer_board_24px"
-                        android:title="Raspberry Pi 1"/>
-                    <item
-                        android:id="@+id/pi2"
-                        android:icon="@drawable/ic_baseline_developer_board_24px"
-                        android:title="Raspberry Pi 2"/>
-                </group>
-            </menu>
-        </item>
-    </group>
+        <group
+            android:checkableBehavior="single"
+            android:id="@+id/menu_top">
+            <item
+                android:id="@+id/rack"
+                android:icon="@drawable/ic_baseline_computer_24px"
+                android:title="Rack"/>
+        </group>
 
-    <group
-        android:id="@+id/menu_bottom"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/settings"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Settings" >
-        </item>
-    </group>
+        <group
+            android:checkableBehavior="single">
+            <item
+                android:id="@+id/plugs"
+                android:icon="@drawable/ic_power_black_24dp"
+                android:title="Plugs"/>
+            <item
+                android:id="@+id/led"
+                android:icon="@drawable/ic_lightbulb_outline_black_24dp"
+                android:title="LED"/>
+            <item
+                android:id="@+id/info"
+                android:icon="@drawable/ic_info_outline_black_24dp"
+                android:title="Info"/>
+        </group>
+
+        <group
+            android:id="@+id/menu_bottom"
+            android:checkableBehavior="single">
+            <item
+                android:id="@+id/settings"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="Settings"></item>
+        </group>
 </menu>

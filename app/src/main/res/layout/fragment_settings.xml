@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Settings"
-                android:textSize="20sp" />
+                android:textSize="26sp" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/saveSettingsButton"
@@ -41,10 +41,19 @@
                 app:fabSize="mini" />
         </LinearLayout>
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/textView12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
+            android:layout_weight="0"
+            android:text="Connection"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
 
             <TextView
@@ -94,31 +103,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/sshCommandLine"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:hint="SSH"
-                android:inputType="textPersonName"
-                android:textSize="11sp" />
-
-            <Button
-                android:id="@+id/sendSshButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_gravity="left"
-                android:layout_marginLeft="5dp"
-                android:text="send (ssh)"
-                android:textSize="11sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
@@ -165,14 +149,37 @@
 
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/defaultRainbowRateText"
+        <TextView
+            android:id="@+id/textView13"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:hint="Default rainbow rate"
-            android:inputType="number"
-            android:textSize="14sp" />
+            android:layout_marginTop="25dp"
+            android:layout_weight="0"
+            android:text="Preferences"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="Default rainbow rate:"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/defaultRainbowRateText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textSize="16sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

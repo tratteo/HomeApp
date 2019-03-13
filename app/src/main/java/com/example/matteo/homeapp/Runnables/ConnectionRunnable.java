@@ -1,10 +1,8 @@
 package com.example.matteo.homeapp.Runnables;
 
-import android.util.Log;
-
 import com.example.matteo.homeapp.Interfaces.KillableRunnable;
-import com.example.matteo.homeapp.MainActivity;
-import com.example.matteo.homeapp.UtilitiesClass;
+import com.example.matteo.homeapp.HomeApp.MainActivity;
+import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
 
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
@@ -24,7 +22,6 @@ public class ConnectionRunnable implements KillableRunnable
     {
         while (!stop)
         {
-            Log.d("DEBUGGING","running");
             try{Thread.sleep(200);} catch (InterruptedException ignored){}
             try
             {
@@ -49,7 +46,7 @@ public class ConnectionRunnable implements KillableRunnable
                 if (mainActivity.listenerRunnable != null)
                     mainActivity.listenerRunnable.kill();
                 mainActivity.listenerRunnable = new ListenerRunnable(mainActivity);
-                UtilitiesClass.getInstance().executeRunnable(mainActivity.listenerRunnable);
+                UtilitiesClass.getInstance().ExecuteRunnable(mainActivity.listenerRunnable);
                 return;
             }
             else

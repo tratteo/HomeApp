@@ -2,6 +2,7 @@ package com.example.matteo.homeapp.Fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -10,15 +11,17 @@ import android.view.LayoutInflater;
 import android.view.*;
 import android.widget.*;
 
-import com.example.matteo.homeapp.MainActivity;
+import com.example.matteo.homeapp.HomeApp.MainActivity;
 import com.example.matteo.homeapp.R;
 import com.example.matteo.homeapp.Runnables.SSHCommandRunnable;
 import com.example.matteo.homeapp.Runnables.SendDataRunnable;
-import com.example.matteo.homeapp.UtilitiesClass;
+import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import xdroid.toaster.Toaster;
 
 
 public class RackFragment extends Fragment
@@ -29,7 +32,9 @@ public class RackFragment extends Fragment
         "Rack Commands",
         "Dolomites Flythrough"
     };
+
     FloatingActionButton deleteCommandLineButton;
+    ImageButton spotifyButton, firefoxButton;
     Button sendDataToRackButton, launchServerButton, closeServerButton, suspendRackButton;
     EditText rackCommandLine;
     Spinner rackCommandsSpinner;
@@ -39,7 +44,7 @@ public class RackFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         mainActivity = (MainActivity) getActivity();
-        return inflater.inflate(R.layout.rack_fragment_layout, null);
+        return inflater.inflate(R.layout.fragment_rack, null);
     }
 
     @Override
@@ -48,6 +53,8 @@ public class RackFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         UtilitiesClass.getInstance().HideSoftInputKeyboard(getView());
 
+        spotifyButton = getView().findViewById(R.id.spotifyIconBtn);
+        firefoxButton = getView().findViewById(R.id.firefoxIconBtn);
         suspendRackButton = getView().findViewById(R.id.suspendRackButton);
         launchServerButton = getView().findViewById(R.id.launchServerButton);
         closeServerButton = getView().findViewById(R.id.closeServerButton);
@@ -64,7 +71,45 @@ public class RackFragment extends Fragment
         closeServerButton.setOnClickListener(clickListener);
         sendDataToRackButton.setOnClickListener(clickListener);
         deleteCommandLineButton.setOnClickListener(clickListener);
+
+        firefoxButton.setOnClickListener(clickListener);
+        firefoxButton.setOnLongClickListener(longClickListener);
+        spotifyButton.setOnClickListener(clickListener);
+        spotifyButton.setOnLongClickListener(longClickListener);
     }
+
+    private View.OnLongClickListener longClickListener = new View.OnLongClickListener()
+    {
+        @Override
+        public boolean onLongClick(View v)
+        {
+            Vibrator vibrator = (Vibrator) getActivity().getSystemService(mainActivity.VIBRATOR_SERVICE);
+            switch(v.getId())
+            {
+                case R.id.spotifyIconBtn:
+                    if(mainActivity.isConnectedToRack())
+                    {
+                        vibrator.vibrate(35);
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-close spotify", mainActivity));
+                    }
+                    else
+                        Toaster.toast("Not connected to rack");
+                    break;
+                case R.id.firefoxIconBtn:
+                    if(mainActivity.isConnectedToRack())
+                    {
+                        vibrator.vibrate(35);
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-close firefox", mainActivity));
+                    }
+                    else
+                        Toaster.toast("Not connected to rack");
+                    break;
+            }
+
+            return true;
+        }
+
+    };
 
     private View.OnClickListener clickListener = new View.OnClickListener()
     {
@@ -75,8 +120,9 @@ public class RackFragment extends Fragment
             {
                 case R.id.sendDataToRack:
                     if(mainActivity.isConnectedToRack() && !rackCommandLine.getText().equals(""))
-                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("rack-" + rackCommandLine.getText(), mainActivity));
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-" + rackCommandLine.getText(), mainActivity));
                     break;
+
                 case R.id.deleteCommandLineButton:
                     rackCommandLine.setText("");
                     break;
@@ -84,18 +130,37 @@ public class RackFragment extends Fragment
                 case R.id.launchServerButton:
                     if(!mainActivity.isConnectedToRack())
                     {
-                        SSHCommandRunnable sshRunnable = new SSHCommandRunnable("192.168.1.40", "rack", "rackpcpassword", "export DISPLAY=:0 && java -jar /home/rack/Programmazione/RackServer/RackServer.jar");
-                        UtilitiesClass.getInstance().executeRunnable(sshRunnable);
+                        SSHCommandRunnable sshRunnable = new SSHCommandRunnable(mainActivity.rackIP, "rack", "rackpcpassword", " export DISPLAY=:0 && /runBatches/run_rack.sh ");
+                        UtilitiesClass.getInstance().ExecuteRunnable(sshRunnable);
                     }
                     break;
 
                 case R.id.closeServerButton:
                     if(mainActivity.isConnectedToRack())
-                        UtilitiesClass.getInstance().executeRunnable(new SendDataRunnable("rack-close server", mainActivity));
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-close server", mainActivity));
                     break;
+
                 case R.id.suspendRackButton:
-                    SSHCommandRunnable sshRunnable = new SSHCommandRunnable("192.168.1.40", "rack", "rackpcpassword", "echo rackpcpassword | sudo -S systemctl suspend");
-                    UtilitiesClass.getInstance().executeRunnable(sshRunnable);
+                    SSHCommandRunnable sshRunnable = new SSHCommandRunnable(mainActivity.rackIP, "rack", "rackpcpassword", "sudo -S systemctl suspend");
+                    UtilitiesClass.getInstance().ExecuteRunnable(sshRunnable);
+                    break;
+
+                case R.id.spotifyIconBtn:
+                    if(mainActivity.isConnectedToRack())
+                    {
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-spotify", mainActivity));
+                    }
+                    else
+                        Toaster.toast("Not connected to rack");
+                    break;
+
+                case R.id.firefoxIconBtn:
+                    if(mainActivity.isConnectedToRack())
+                    {
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-firefox", mainActivity));
+                    }
+                    else
+                        Toaster.toast("Not connected to rack");
                     break;
             }
         }

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="LED"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/ledOnButton"
+                android:layout_width="110dp"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:layout_marginRight="30dp"
+                android:text="ON" />
+
+            <Button
+                android:id="@+id/ledOffButton"
+                android:layout_width="110dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="30dp"
+                android:text="OFF" />
+
+            <Button
+                android:id="@+id/colorpickerButton"
+                android:layout_width="110dp"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:text="Color" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:text="Rainbow"
+            android:textSize="22sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/rainbowstartButton"
+                android:layout_width="160dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="20dp"
+                android:text="Start" />
+
+            <EditText
+                android:id="@+id/rainbowRateText"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:ems="10"
+                android:hint="Rate"
+                android:inputType="numberDecimal" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/rainbowstopButton"
+            android:layout_width="160dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0"
+            android:text="stop" />
+
+    </LinearLayout>
+
+</RelativeLayout>
