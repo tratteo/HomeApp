@@ -2,11 +2,13 @@ package com.example.matteo.homeapp.Fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.*;
 import android.widget.*;
@@ -33,8 +35,9 @@ public class RackFragment extends Fragment
         "Dolomites Flythrough"
     };
 
+    SeekBar volumeSeekBar;
     FloatingActionButton deleteCommandLineButton;
-    ImageButton spotifyButton, firefoxButton;
+    ImageButton spotifyButton, firefoxButton, spotifyToggleButton, spotifyNextButton, spotifyPreviousButton;
     Button sendDataToRackButton, launchServerButton, closeServerButton, suspendRackButton;
     EditText rackCommandLine;
     Spinner rackCommandsSpinner;
@@ -53,6 +56,10 @@ public class RackFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         UtilitiesClass.getInstance().HideSoftInputKeyboard(getView());
 
+        volumeSeekBar = getView().findViewById(R.id.volumeSeekBar);
+        spotifyNextButton = getView().findViewById(R.id.spotifyNextBtn);
+        spotifyToggleButton = getView().findViewById(R.id.spotifyToggleBtn);
+        spotifyPreviousButton = getView().findViewById(R.id.spotifyPrevBtn);
         spotifyButton = getView().findViewById(R.id.spotifyIconBtn);
         firefoxButton = getView().findViewById(R.id.firefoxIconBtn);
         suspendRackButton = getView().findViewById(R.id.suspendRackButton);
@@ -76,6 +83,13 @@ public class RackFragment extends Fragment
         firefoxButton.setOnLongClickListener(longClickListener);
         spotifyButton.setOnClickListener(clickListener);
         spotifyButton.setOnLongClickListener(longClickListener);
+
+        spotifyToggleButton.setOnClickListener(clickListener);
+        spotifyNextButton.setOnClickListener(clickListener);
+        spotifyPreviousButton.setOnClickListener(clickListener);
+
+        volumeSeekBar.setOnSeekBarChangeListener(seekBarListener);
+
     }
 
     private View.OnLongClickListener longClickListener = new View.OnLongClickListener()
@@ -111,6 +125,20 @@ public class RackFragment extends Fragment
 
     };
 
+    private SeekBar.OnSeekBarChangeListener seekBarListener = new SeekBar.OnSeekBarChangeListener()
+    {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean state)
+        {
+            UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-amixer -D pulse sset Master " + Integer.toString(progress*10)+ "%", mainActivity));
+            Log.d("TESTV", Integer.toString(progress));
+        }
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) { }
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) { }
+    };
+
     private View.OnClickListener clickListener = new View.OnClickListener()
     {
         @Override
@@ -128,11 +156,8 @@ public class RackFragment extends Fragment
                     break;
 
                 case R.id.launchServerButton:
-                    if(!mainActivity.isConnectedToRack())
-                    {
-                        SSHCommandRunnable sshRunnable = new SSHCommandRunnable(mainActivity.rackIP, "rack", "rackpcpassword", " export DISPLAY=:0 && /runBatches/run_rack.sh ");
-                        UtilitiesClass.getInstance().ExecuteRunnable(sshRunnable);
-                    }
+                    SSHCommandRunnable launchServerSsh = new SSHCommandRunnable(mainActivity.rackIP, "rack", "rackpcpassword", "export DISPLAY=:0 && /runBatches/run_rack.sh");
+                    UtilitiesClass.getInstance().ExecuteRunnable(launchServerSsh);
                     break;
 
                 case R.id.closeServerButton:
@@ -162,9 +187,28 @@ public class RackFragment extends Fragment
                     else
                         Toaster.toast("Not connected to rack");
                     break;
+                case R.id.spotifyToggleBtn:
+                    if(mainActivity.isConnectedToRack())
+                    {
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-spotifytoggle", mainActivity));
+                    }
+                    break;
+                case R.id.spotifyNextBtn:
+                    if(mainActivity.isConnectedToRack())
+                    {
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-spotifynext", mainActivity));
+                    }
+                    break;
+                case R.id.spotifyPrevBtn:
+                    if(mainActivity.isConnectedToRack())
+                    {
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-spotifyprevious", mainActivity));
+                    }
+                    break;
             }
         }
     };
+
 
     private AdapterView.OnItemSelectedListener itemChangeListener = new AdapterView.OnItemSelectedListener()
     {

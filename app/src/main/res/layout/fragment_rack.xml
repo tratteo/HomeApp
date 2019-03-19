@@ -114,7 +114,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:gravity="center"
             android:orientation="horizontal"
             android:padding="0dp">
 
@@ -126,14 +125,6 @@
                 app:srcCompat="@drawable/ic_icons8_spotify" />-->
 
             <ImageButton
-                android:id="@+id/spotifyIconBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:background="?android:selectableItemBackground"
-                app:srcCompat="@drawable/ic_icons8_spotify" />
-
-            <ImageButton
                 android:id="@+id/firefoxIconBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -142,6 +133,58 @@
                 app:srcCompat="@drawable/ic_icons8_firefox" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="0dp">
+
+            <ImageButton
+                android:id="@+id/spotifyIconBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="50dp"
+                android:background="?android:selectableItemBackground"
+                app:srcCompat="@drawable/ic_icons8_spotify" />
+
+            <ImageButton
+                android:id="@+id/spotifyPrevBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:background="?android:selectableItemBackground"
+                app:srcCompat="@drawable/ic_round_skip_previous_36px" />
+
+            <ImageButton
+                android:id="@+id/spotifyToggleBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:background="?android:selectableItemBackground"
+                app:srcCompat="@drawable/ic_round_play_arrow_36px" />
+
+            <ImageButton
+                android:id="@+id/spotifyNextBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackground"
+                app:srcCompat="@drawable/ic_round_skip_next_36px" />
+
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/volumeSeekBar"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            android:max="10"
+            android:progress="0" />
 
     </LinearLayout>
 </RelativeLayout>
