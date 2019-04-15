@@ -1,5 +1,7 @@
 package com.example.matteo.homeapp.Runnables;
 
+import android.util.Log;
+
 import com.example.matteo.homeapp.Interfaces.KillableRunnable;
 import com.example.matteo.homeapp.HomeApp.MainActivity;
 import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
@@ -47,7 +49,7 @@ public class ConnectionRunnable implements KillableRunnable
                     mainActivity.listenerRunnable.kill();
                 mainActivity.listenerRunnable = new ListenerRunnable(mainActivity);
                 UtilitiesClass.getInstance().ExecuteRunnable(mainActivity.listenerRunnable);
-                return;
+                kill();
             }
             else
                 try{Thread.sleep(800);} catch (InterruptedException ignored){}
