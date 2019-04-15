@@ -40,11 +40,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public PrintWriter outToRack;
 
     //Inflated fragments
-    public RackFragment rackFragment;
-    public LEDFragment ledFragment;
-    public PlugsFragment plugsFragment;
-    public SettingsFragment settingsFragment;
-    public InfoFragment infoFragment;
+    private Fragment currentFragment = null;
+    public Fragment getCurrentFragment() {return currentFragment;}
 
     private NavigationView navigationDrawer;
     private DrawerLayout drawerLayout;
@@ -54,20 +51,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public synchronized void setConnectedToRack(boolean connectedToRack) {this.connectedToRack = connectedToRack;}
 
     @Override
-    protected void onStart()
+    protected void onResume()
     {
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         registerReceiver(wifiStateReceiver, intentFilter);
-        super.onStart();
+        super.onResume();
         UtilitiesClass.getInstance().LoadAppPreferences();
         if(IsConnectedToWiFi())
             StartConnectionThread();
     }
 
     @Override
-    protected void onStop()
+    protected void onPause()
     {
-        super.onStop();
+        super.onPause();
         unregisterReceiver(wifiStateReceiver);
 
         if(connectionRunnable != null && connectionRunnable.isRunning())
@@ -100,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         navigationDrawer.setNavigationItemSelectedListener(this);
 
-        InflateFragment(new RackFragment());
+        currentFragment = new RackFragment();
+        InflateFragment(currentFragment);
         navigationDrawer.setCheckedItem(R.id.rack);
     }
 
@@ -134,27 +132,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         {
             case R.id.rack:
                 fragment = new RackFragment();
-                rackFragment = (RackFragment)fragment;
                 break;
             case R.id.plugs:
                 fragment = new PlugsFragment();
-                plugsFragment = (PlugsFragment)fragment;
                 break;
             case R.id.led:
                 fragment = new LEDFragment();
-                ledFragment = (LEDFragment)fragment;
                 break;
             case R.id.settings:
                 fragment = new SettingsFragment();
-                settingsFragment = (SettingsFragment)fragment;
                 break;
             case R.id.info:
                 fragment = new InfoFragment();
-                infoFragment = (InfoFragment)fragment;
                 break;
         }
         if (fragment != null)
         {
+            currentFragment = fragment;
             InflateFragment(fragment);
         }
         drawerLayout.closeDrawer(GravityCompat.START);

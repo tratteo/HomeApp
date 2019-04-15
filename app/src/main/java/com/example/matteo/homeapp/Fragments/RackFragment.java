@@ -130,8 +130,7 @@ public class RackFragment extends Fragment
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean state)
         {
-            UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-amixer -D pulse sset Master " + Integer.toString(progress*10)+ "%", mainActivity));
-            Log.d("TESTV", Integer.toString(progress));
+            UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-volume" + Integer.toString(progress*10), mainActivity));
         }
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) { }
@@ -156,7 +155,7 @@ public class RackFragment extends Fragment
                     break;
 
                 case R.id.launchServerButton:
-                    SSHCommandRunnable launchServerSsh = new SSHCommandRunnable(mainActivity.rackIP, "rack", "rackpcpassword", "export DISPLAY=:0 && /runBatches/run_rack.sh");
+                    SSHCommandRunnable launchServerSsh = new SSHCommandRunnable(mainActivity.rackIP, "rack", "rackpcpassword", "export DISPLAY=:0 && /run_batches/run_rack.sh");
                     UtilitiesClass.getInstance().ExecuteRunnable(launchServerSsh);
                     break;
 
@@ -255,5 +254,10 @@ public class RackFragment extends Fragment
         };
         rackCommandsSpinnerAdapter.setDropDownViewResource(R.layout.rack_commands_spinner);
         rackCommandsSpinner.setAdapter(rackCommandsSpinnerAdapter);
+    }
+
+    public void SetVolumeSeekBarValue(int value)
+    {
+        volumeSeekBar.setProgress(value);
     }
 }
