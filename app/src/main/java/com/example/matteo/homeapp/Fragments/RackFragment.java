@@ -147,7 +147,7 @@ public class RackFragment extends Fragment
             {
                 case R.id.sendDataToRack:
                     if(mainActivity.isConnectedToRack() && !rackCommandLine.getText().equals(""))
-                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-" + rackCommandLine.getText(), mainActivity));
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(rackCommandLine.getText().toString(), mainActivity));
                     break;
 
                 case R.id.deleteCommandLineButton:

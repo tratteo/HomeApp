@@ -18,8 +18,15 @@ public class LEDFragment extends Fragment
 {
     private MainActivity mainActivity;
     public static String defaultRainbowRate = "800";
-    private Button ledOnButton, ledOffButton, rainbowstartButton, rainbowstopButton, colorpickerButton;
-    private EditText rainbowrateText;
+    //Window LED
+    private Button windowLedOnButton, windowLedOffButton, windowRainbowstartButton, windowRainbowstopButton, windowColorPickerButton;
+    private EditText windowRainbowRateText;
+    //Shelf LED
+    private Button shelfLedOnButton, shelfLedOffButton, shelfRainbowstartButton, shelfRainbowstopButton, shelfColorPickerButton;
+    private EditText shelfRainbowRateText;
+
+    private AmbilWarnaDialog dialog;
+    private String colorPickerPrefix = UtilitiesClass.ARDUINO_PREFIX;
 
     @Nullable
     @Override
@@ -35,22 +42,44 @@ public class LEDFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
 
         UtilitiesClass.getInstance().HideSoftInputKeyboard(getView());
-
-        rainbowrateText = getView().findViewById(R.id.rainbowRateText);
-        rainbowrateText.setHint(UtilitiesClass.getInstance().GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE"));
-
-        colorpickerButton = getView().findViewById(R.id.colorpickerButton);
-        rainbowstopButton = getView().findViewById(R.id.rainbowstopButton);
-        rainbowstartButton = getView().findViewById(R.id.rainbowstartButton);
-        ledOnButton = getView().findViewById(R.id.ledOnButton);
-        ledOffButton = getView().findViewById(R.id.ledOffButton);
-
-        colorpickerButton.setOnClickListener(clickListener);
-        rainbowstopButton.setOnClickListener(clickListener);
-        rainbowstartButton.setOnClickListener(clickListener);
-        ledOffButton.setOnClickListener(clickListener);
-        ledOnButton.setOnClickListener(clickListener);
+        InitializeVariables();
     }
+
+    private void InitializeVariables()
+    {
+        //Window LED
+        windowRainbowRateText = getView().findViewById(R.id.windowRainbowRateText);
+        windowRainbowRateText.setHint(UtilitiesClass.getInstance().GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE"));
+
+        windowColorPickerButton = getView().findViewById(R.id.windowColorpickerButton);
+        windowRainbowstopButton = getView().findViewById(R.id.windowRainbowstopButton);
+        windowRainbowstartButton = getView().findViewById(R.id.windowRainbowstartButton);
+        windowLedOnButton = getView().findViewById(R.id.windowLedOnButton);
+        windowLedOffButton = getView().findViewById(R.id.windowLedOffButton);
+
+        windowColorPickerButton.setOnClickListener(clickListener);
+        windowRainbowstopButton.setOnClickListener(clickListener);
+        windowRainbowstartButton.setOnClickListener(clickListener);
+        windowLedOffButton.setOnClickListener(clickListener);
+        windowLedOnButton.setOnClickListener(clickListener);
+
+        //Shelf LED
+        shelfRainbowRateText = getView().findViewById(R.id.shelfRainbowRateText);
+        shelfRainbowRateText.setHint(UtilitiesClass.getInstance().GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE"));
+
+        shelfColorPickerButton = getView().findViewById(R.id.shelfColorpickerButton);
+        shelfRainbowstopButton = getView().findViewById(R.id.shelfRainbowstopButton);
+        shelfRainbowstartButton = getView().findViewById(R.id.shelfRainbowstartButton);
+        shelfLedOnButton = getView().findViewById(R.id.shelfLedOnButton);
+        shelfLedOffButton = getView().findViewById(R.id.shelfLedOffButton);
+
+        shelfColorPickerButton.setOnClickListener(clickListener);
+        shelfRainbowstopButton.setOnClickListener(clickListener);
+        shelfRainbowstartButton.setOnClickListener(clickListener);
+        shelfLedOnButton.setOnClickListener(clickListener);
+        shelfLedOffButton.setOnClickListener(clickListener);
+    }
+
 
     //Color picker listener
     private AmbilWarnaDialog.OnAmbilWarnaListener colorPickerListener = new AmbilWarnaDialog.OnAmbilWarnaListener()
@@ -66,9 +95,9 @@ public class LEDFragment extends Fragment
             String b = Integer.toString( (color) & 0xFF );
             if(mainActivity.isConnectedToRack())
             {
-                UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("ar-r" + r, mainActivity));
-                UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("ar-g" + g, mainActivity));
-                UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("ar-b" + b, mainActivity));
+                UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(colorPickerPrefix + "r" + r, mainActivity));
+                UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(colorPickerPrefix + "g" +  g, mainActivity));
+                UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(colorPickerPrefix + "b" + b, mainActivity));
             }
         }
     };
@@ -78,37 +107,78 @@ public class LEDFragment extends Fragment
         @Override
         public void onClick(View v)
         {
-            switch(v.getId()) {
-                case R.id.ledOnButton:
-                    if (mainActivity.isConnectedToRack()) {
+            switch(v.getId())
+            {
+                case R.id.shelfLedOnButton:
+                    if (mainActivity.isConnectedToRack())
+                    {
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(UtilitiesClass.PI1_PREFIX+ "on", mainActivity));
+                    }
+                    break;
+                case R.id.shelfLedOffButton:
+                    if (mainActivity.isConnectedToRack())
+                    {
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(UtilitiesClass.PI1_PREFIX + "off", mainActivity));
+                    }
+                    break;
+
+                case R.id.shelfRainbowstartButton:
+                    if (mainActivity.isConnectedToRack())
+                    {
+                        String rate;
+                        if (shelfRainbowRateText.getText().toString().equals(""))
+                            rate = UtilitiesClass.getInstance().GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE");
+                        else
+                            rate = shelfRainbowRateText.getText().toString();
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(UtilitiesClass.PI1_PREFIX + "rainbowstart" + rate, mainActivity));
+                    }
+                    break;
+                case R.id.shelfRainbowstopButton:
+                    if (mainActivity.isConnectedToRack())
+                    {
+                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(UtilitiesClass.PI1_PREFIX + "rainbowstop", mainActivity));
+                    }
+                    break;
+                case R.id.shelfColorpickerButton:
+                    colorPickerPrefix = UtilitiesClass.PI1_PREFIX;
+                    dialog = new AmbilWarnaDialog(mainActivity, 0xFFFFFF, colorPickerListener);
+                    dialog.show();
+                    break;
+
+                case R.id.windowLedOnButton:
+                    if (mainActivity.isConnectedToRack())
+                    {
                         UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(UtilitiesClass.ARDUINO_PREFIX + "on", mainActivity));
                     }
                     break;
 
-                case R.id.ledOffButton:
-                    if (mainActivity.isConnectedToRack()) {
+                case R.id.windowLedOffButton:
+                    if (mainActivity.isConnectedToRack())
+                    {
                         UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(UtilitiesClass.ARDUINO_PREFIX + "off", mainActivity));
                     }
                     break;
 
-                case R.id.rainbowstartButton:
-                    if (mainActivity.isConnectedToRack()) {
+                case R.id.windowRainbowstartButton:
+                    if (mainActivity.isConnectedToRack())
+                    {
                         String rate;
-                        if (rainbowrateText.getText().toString().equals(""))
+                        if (windowRainbowRateText.getText().toString().equals(""))
                             rate = UtilitiesClass.getInstance().GetSharedPreferencesKey("settings", "DEFAULT_RAINBOW_RATE");
                         else
-                            rate = rainbowrateText.getText().toString();
+                            rate = windowRainbowRateText.getText().toString();
                         UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(UtilitiesClass.ARDUINO_PREFIX + "rainbowstart" + rate, mainActivity));
                     }
                     break;
-                case R.id.rainbowstopButton:
-                    if (mainActivity.isConnectedToRack()) {
-                        //TODO change communication protocol
+                case R.id.windowRainbowstopButton:
+                    if (mainActivity.isConnectedToRack())
+                    {
                         UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable(UtilitiesClass.ARDUINO_PREFIX + "rainbowstop", mainActivity));
                     }
                     break;
-                case R.id.colorpickerButton:
-                    AmbilWarnaDialog dialog = new AmbilWarnaDialog(mainActivity, 0xFFFFFF, colorPickerListener);
+                case R.id.windowColorpickerButton:
+                    colorPickerPrefix = UtilitiesClass.ARDUINO_PREFIX;
+                    dialog = new AmbilWarnaDialog(mainActivity, 0xFFFFFF, colorPickerListener);
                     dialog.show();
                     break;
             }
