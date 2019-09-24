@@ -2,6 +2,8 @@ package com.example.matteo.homeapp.HomeApp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import com.example.matteo.homeapp.Fragments.LEDFragment;
@@ -144,5 +146,11 @@ public class UtilitiesClass
         int intBlue = (int)blue;
         int color = (0xFF & 0xFF) << 24 | (intRed & 0xFF) << 16 | (intGreen & 0xFF) << 8 | (intBlue & 0xFF);
         return color;
+    }
+
+    public void ExecuteOnMainThread(Runnable runnable)
+    {
+        Handler mainHandler = new Handler(mainActivity.getBaseContext().getMainLooper());
+        mainHandler.post(runnable);
     }
 }

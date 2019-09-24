@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public Socket rackSocket;
     public PrintWriter outToRack;
 
+    public boolean tratPiConnected = false, guizPiConnected = false, arduinoConnected = false;
+    public synchronized void SetP1Connected(boolean status){tratPiConnected = status;}
+
     //Inflated fragments
     private Fragment currentFragment = null;
     public Fragment getCurrentFragment() {return currentFragment;}
@@ -53,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume()
     {
+        Log.d("TEST", "p1-"+(tratPiConnected));
+        Log.d("TEST", "p2-"+(guizPiConnected));
+        Log.d("TEST", "ar-"+(arduinoConnected));
         IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
         registerReceiver(wifiStateReceiver, intentFilter);
         super.onResume();

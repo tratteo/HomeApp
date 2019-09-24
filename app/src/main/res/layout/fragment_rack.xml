@@ -8,7 +8,8 @@
     android:layout_marginRight="0dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:layout_editor_absoluteY="81dp">
+    tools:layout_editor_absoluteY="81dp"
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,6 +24,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
             android:text="Rack"
+            android:textColor="@android:color/background_light"
             android:textSize="18sp" />
 
         <LinearLayout
@@ -38,9 +40,12 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
+                android:backgroundTint="@color/colorAccent"
                 android:ems="10"
                 android:hint="Rack CMD"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:textColor="@android:color/background_light"
+                android:textColorHint="@android:color/darker_gray" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/deleteCommandLineButton"
@@ -67,13 +72,6 @@
                 android:layout_gravity="left|center_vertical"
                 android:layout_marginLeft="5dp"
                 android:text="Send" />
-
-            <Spinner
-                android:id="@+id/rackCommands"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="20dp"></Spinner>
 
 
         </LinearLayout>
@@ -177,14 +175,16 @@
 
         <SeekBar
             android:id="@+id/volumeSeekBar"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
             android:layout_marginRight="15dp"
+            android:backgroundTint="@android:color/background_light"
             android:max="10"
-            android:progress="0" />
+            android:progress="0"
+            android:progressBackgroundTint="@android:color/darker_gray"
+            android:progressTint="@color/colorAccent" />
 
     </LinearLayout>
 </RelativeLayout>

@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Window and rack"
-            android:textSize="24sp" />
+            android:textColor="@android:color/background_light"
+            android:textSize="22sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,25 +36,28 @@
             <Button
                 android:id="@+id/windowLedOnButton"
                 android:layout_width="110dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_gravity="left"
                 android:layout_marginRight="30dp"
-                android:text="ON" />
+                android:text="ON"
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/windowLedOffButton"
                 android:layout_width="110dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_marginRight="30dp"
-                android:text="OFF" />
+                android:text="OFF"
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/windowColorpickerButton"
                 android:layout_width="110dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_gravity="left"
                 android:layout_weight="1"
-                android:text="Color" />
+                android:text="Color"
+                android:textSize="12sp" />
 
         </LinearLayout>
 
@@ -60,9 +65,10 @@
             android:id="@+id/textView14"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
             android:text="Rainbow"
+            android:textColor="@android:color/background_light"
             android:textSize="20sp" />
 
         <LinearLayout
@@ -74,8 +80,8 @@
 
             <Button
                 android:id="@+id/windowRainbowstartButton"
-                android:layout_width="160dp"
-                android:layout_height="50dp"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
                 android:layout_marginRight="20dp"
                 android:text="Start" />
 
@@ -86,14 +92,17 @@
                 android:layout_weight="0"
                 android:ems="10"
                 android:hint="Rate"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/background_light"
+                android:textColorHint="@android:color/darker_gray"
+                android:backgroundTint="@color/colorAccent"/>
 
         </LinearLayout>
 
         <Button
             android:id="@+id/windowRainbowstopButton"
-            android:layout_width="160dp"
-            android:layout_height="50dp"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:layout_weight="0"
             android:text="stop" />
@@ -102,9 +111,10 @@
             android:id="@+id/textView6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="25dp"
             android:text="Shelf"
-            android:textSize="24sp" />
+            android:textColor="@android:color/background_light"
+            android:textSize="22sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -116,7 +126,7 @@
             <Button
                 android:id="@+id/shelfLedOnButton"
                 android:layout_width="110dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_gravity="left"
                 android:layout_marginRight="30dp"
                 android:text="ON" />
@@ -124,14 +134,14 @@
             <Button
                 android:id="@+id/shelfLedOffButton"
                 android:layout_width="110dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_marginRight="30dp"
                 android:text="OFF" />
 
             <Button
                 android:id="@+id/shelfColorpickerButton"
                 android:layout_width="110dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_gravity="left"
                 android:layout_weight="1"
                 android:text="Color" />
@@ -142,9 +152,10 @@
             android:id="@+id/textView10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
             android:text="Rainbow"
+            android:textColor="@android:color/background_light"
             android:textSize="20sp" />
 
         <LinearLayout
@@ -156,26 +167,30 @@
 
             <Button
                 android:id="@+id/shelfRainbowstartButton"
-                android:layout_width="160dp"
-                android:layout_height="50dp"
+                android:layout_width="140dp"
+                android:layout_height="40dp"
                 android:layout_marginRight="20dp"
                 android:text="Start" />
 
             <EditText
                 android:id="@+id/shelfRainbowRateText"
+                style="@style/Widget.AppCompat.Light.AutoCompleteTextView"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:ems="10"
                 android:hint="Rate"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/background_light"
+                android:textColorHint="@android:color/darker_gray"
+                android:backgroundTint="@color/colorAccent"/>
 
         </LinearLayout>
 
         <Button
             android:id="@+id/shelfRainbowstopButton"
-            android:layout_width="160dp"
-            android:layout_height="50dp"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:layout_weight="0"
             android:text="stop" />

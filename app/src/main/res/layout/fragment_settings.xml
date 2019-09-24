@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".Fragments.SettingsFragment">
+    tools:context=".Fragments.SettingsFragment"
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,6 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Settings"
+                android:textColor="@android:color/background_light"
                 android:textSize="26sp" />
 
             <android.support.design.widget.FloatingActionButton
@@ -48,6 +50,7 @@
             android:layout_marginTop="25dp"
             android:layout_weight="0"
             android:text="Connection"
+            android:textColor="@android:color/background_light"
             android:textSize="20sp" />
 
         <LinearLayout
@@ -61,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="Rack"
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@android:color/background_light" />
 
             <Button
                 android:id="@+id/reconnectRackButton"
@@ -84,10 +87,13 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="0dp"
+                android:backgroundTint="@color/colorAccent"
                 android:digits="0123456789."
                 android:ems="10"
                 android:hint="IP"
                 android:inputType="number"
+                android:textColor="@android:color/background_light"
+                android:textColorHint="@android:color/darker_gray"
                 android:textSize="14sp" />
 
             <EditText
@@ -96,9 +102,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="35dp"
                 android:layout_weight="1"
+                android:backgroundTint="@color/colorAccent"
                 android:ems="10"
                 android:hint="Port "
                 android:inputType="number"
+                android:textColor="@android:color/background_light"
+                android:textColorHint="@android:color/darker_gray"
                 android:textSize="14sp" />
         </LinearLayout>
 
@@ -114,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="Raspberry Pi 1"
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@android:color/background_light" />
 
             <Button
                 android:id="@+id/reconnectP1Button"
@@ -137,7 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Raspberry Pi 2"
-                android:textColor="@color/colorPrimary" />
+                android:textColor="@android:color/background_light" />
 
             <Button
                 android:id="@+id/reconnectP2Button"
@@ -156,6 +165,7 @@
             android:layout_marginTop="25dp"
             android:layout_weight="0"
             android:text="Preferences"
+            android:textColor="@android:color/background_light"
             android:textSize="20sp" />
 
         <LinearLayout
@@ -170,13 +180,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
                 android:text="Default rainbow rate:"
+                android:textColor="@android:color/background_light"
                 android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/defaultRainbowRateText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorAccent"
                 android:inputType="number"
+                android:textColor="@android:color/background_light"
+                android:textColorHint="@android:color/darker_gray"
                 android:textSize="16sp" />
 
         </LinearLayout>

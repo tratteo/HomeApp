@@ -10,6 +10,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="EditTextWhite">
+        <!-- Used for the bottom line when not selected / focused -->
+        <item name="colorAccent">#9e9e9e</item>
+        <!-- colorControlActivated & colorControlHighlight use the colorAccent color by default -->
+    </style>
+
+    <style name="NavDrawerStyle" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorControlHighlight">@color/colorAccent</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

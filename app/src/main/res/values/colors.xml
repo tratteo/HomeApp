@@ -2,6 +2,9 @@
 <resources>
     <color name="colorPrimary">#d75200</color>
     <item name="splashBackground" type="color">#d75200</item>
-    <color name="colorPrimaryDark">#252525</color>
+    <color name="colorPrimaryDark">#D5D5D5</color>
     <color name="colorAccent">#ff6200</color>
+    <color name="enabled">#16B100</color>
+    <color name="disabled">#D80A0A</color>
+    <color name="background">#161414</color>
 </resources>

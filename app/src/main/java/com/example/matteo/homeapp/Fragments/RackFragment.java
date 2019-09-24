@@ -40,7 +40,6 @@ public class RackFragment extends Fragment
     ImageButton spotifyButton, firefoxButton, spotifyToggleButton, spotifyNextButton, spotifyPreviousButton;
     Button sendDataToRackButton, launchServerButton, closeServerButton, suspendRackButton;
     EditText rackCommandLine;
-    Spinner rackCommandsSpinner;
 
     @Nullable
     @Override
@@ -66,13 +65,10 @@ public class RackFragment extends Fragment
         launchServerButton = getView().findViewById(R.id.launchServerButton);
         closeServerButton = getView().findViewById(R.id.closeServerButton);
         deleteCommandLineButton = getView().findViewById(R.id.deleteCommandLineButton);
-        rackCommandsSpinner = getView().findViewById(R.id.rackCommands);
         sendDataToRackButton = getView().findViewById(R.id.sendDataToRack);
         rackCommandLine = getView().findViewById(R.id.rackCommandLine);
 
-        SetArrayAdapterForSpinner();
 
-        rackCommandsSpinner.setOnItemSelectedListener(itemChangeListener);
         suspendRackButton.setOnClickListener(clickListener);
         launchServerButton.setOnClickListener(clickListener);
         closeServerButton.setOnClickListener(clickListener);
@@ -209,7 +205,7 @@ public class RackFragment extends Fragment
     };
 
 
-    private AdapterView.OnItemSelectedListener itemChangeListener = new AdapterView.OnItemSelectedListener()
+/*    private AdapterView.OnItemSelectedListener itemChangeListener = new AdapterView.OnItemSelectedListener()
     {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
@@ -254,7 +250,7 @@ public class RackFragment extends Fragment
         };
         rackCommandsSpinnerAdapter.setDropDownViewResource(R.layout.rack_commands_spinner);
         rackCommandsSpinner.setAdapter(rackCommandsSpinnerAdapter);
-    }
+    }*/
 
     public void SetVolumeSeekBarValue(int value)
     {
