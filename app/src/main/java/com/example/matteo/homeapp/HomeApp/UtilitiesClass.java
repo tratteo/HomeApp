@@ -3,7 +3,7 @@ package com.example.matteo.homeapp.HomeApp;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import com.example.matteo.homeapp.Fragments.LEDFragment;

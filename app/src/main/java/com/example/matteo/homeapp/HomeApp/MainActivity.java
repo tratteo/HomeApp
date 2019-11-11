@@ -4,15 +4,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v4.app.*;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.app.*;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -57,22 +59,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume()
     {
-        Log.d("TEST", "p1-"+(tratPiConnected));
-        Log.d("TEST", "p2-"+(guizPiConnected));
-        Log.d("TEST", "ar-"+(arduinoConnected));
-        IntentFilter intentFilter = new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        registerReceiver(wifiStateReceiver, intentFilter);
         super.onResume();
         UtilitiesClass.getInstance().LoadAppPreferences();
-        if(IsConnectedToWiFi())
-            StartConnectionThread();
+        StartConnectionThread();
     }
 
     @Override
     protected void onPause()
     {
         super.onPause();
-        unregisterReceiver(wifiStateReceiver);
 
         if(connectionRunnable != null && connectionRunnable.isRunning())
             connectionRunnable.kill();
@@ -168,28 +163,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         connectionRunnable = new ConnectionRunnable(this);
         UtilitiesClass.getInstance().ExecuteRunnable(connectionRunnable);
     }
-
-    public boolean IsConnectedToWiFi()
-    {
-        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        return wifiManager.getConnectionInfo().getNetworkId() != -1;
-    }
-
-    private BroadcastReceiver wifiStateReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            int wifiStateExtra = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
-            switch(wifiStateExtra)
-            {
-                case WifiManager.WIFI_STATE_DISABLED:
-                    if(connectionRunnable != null && connectionRunnable.isRunning())
-                        connectionRunnable.kill();
-                    toolbarConnectionText.setText("Activate Wi-Fi and retry");
-                    connectedToRack = false;
-                    break;
-            }
-        }
-    };
 }

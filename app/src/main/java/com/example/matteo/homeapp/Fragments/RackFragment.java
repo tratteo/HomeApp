@@ -1,14 +1,12 @@
 package com.example.matteo.homeapp.Fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.*;
 import android.widget.*;
@@ -18,10 +16,6 @@ import com.example.matteo.homeapp.R;
 import com.example.matteo.homeapp.Runnables.SSHCommandRunnable;
 import com.example.matteo.homeapp.Runnables.SendDataRunnable;
 import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import xdroid.toaster.Toaster;
 
@@ -99,7 +93,7 @@ public class RackFragment extends Fragment
                 case R.id.spotifyIconBtn:
                     if(mainActivity.isConnectedToRack())
                     {
-                        vibrator.vibrate(35);
+                        vibrator.vibrate(50);
                         UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-close spotify", mainActivity));
                     }
                     else
@@ -108,7 +102,7 @@ public class RackFragment extends Fragment
                 case R.id.firefoxIconBtn:
                     if(mainActivity.isConnectedToRack())
                     {
-                        vibrator.vibrate(35);
+                        vibrator.vibrate(50);
                         UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("rack-close firefox", mainActivity));
                     }
                     else

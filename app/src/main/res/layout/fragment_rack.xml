@@ -47,7 +47,7 @@
                 android:textColor="@android:color/background_light"
                 android:textColorHint="@android:color/darker_gray" />
 
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/deleteCommandLineButton"
                 android:layout_width="42dp"
                 android:layout_height="42dp"

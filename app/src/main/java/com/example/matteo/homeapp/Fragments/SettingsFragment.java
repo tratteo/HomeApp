@@ -1,10 +1,10 @@
 package com.example.matteo.homeapp.Fragments;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +13,6 @@ import android.widget.EditText;
 
 import com.example.matteo.homeapp.HomeApp.MainActivity;
 import com.example.matteo.homeapp.R;
-import com.example.matteo.homeapp.Runnables.SSHCommandRunnable;
 import com.example.matteo.homeapp.Runnables.SendDataRunnable;
 import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
 
@@ -97,18 +96,15 @@ public class SettingsFragment extends Fragment
                     break;
 
                 case R.id.reconnectRackButton:
-                    if(!mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
-                        mainActivity.StartConnectionThread();
+                    mainActivity.StartConnectionThread();
                     break;
 
                 case R.id.reconnectP1Button:
-                    if(mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
-                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("p1-connect", mainActivity));
+                    UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("p1-connect", mainActivity));
                     break;
 
                 case R.id.reconnectP2Button:
-                    if(mainActivity.isConnectedToRack() && mainActivity.IsConnectedToWiFi())
-                        UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("p2-connect", mainActivity));
+                    UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("p2-connect", mainActivity));
                     break;
             }
         }
