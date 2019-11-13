@@ -150,6 +150,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         if (fragment != null)
         {
+            if(currentFragment.getClass().equals(InfoFragment.class))
+            {
+                InfoFragment info = (InfoFragment) currentFragment;
+                info.KillVideoReceiverThread();
+            }
             currentFragment = fragment;
             InflateFragment(fragment);
         }

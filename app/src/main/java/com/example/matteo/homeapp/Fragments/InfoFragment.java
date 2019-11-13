@@ -1,24 +1,39 @@
 package com.example.matteo.homeapp.Fragments;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.matteo.homeapp.HomeApp.MainActivity;
 import com.example.matteo.homeapp.HomeApp.UtilitiesClass;
 import com.example.matteo.homeapp.R;
+import com.example.matteo.homeapp.Runnables.SendDataRunnable;
+import com.example.matteo.homeapp.Runnables.VideoReceiverThread;
 
 public class InfoFragment extends Fragment
 {
     private MainActivity mainActivity;
+    private Switch videoStreamSwitch;
+    private VideoReceiverThread videoReceiverThread = null;
     public TextView temperatureTextView = null;
+    public ImageView videoFrame = null;
     public TextView tratPiConnectText = null;
     public TextView guizPiConnectText = null;
     public TextView arduinoConnectText = null;
@@ -39,10 +54,33 @@ public class InfoFragment extends Fragment
         tratPiConnectText = getView().findViewById(R.id.tratPiConnectedText);
         guizPiConnectText = getView().findViewById(R.id.guizPiConnectedText);
         arduinoConnectText = getView().findViewById(R.id.arduinoConnectedText);
+        videoFrame = getView().findViewById(R.id.videoStreamFrame);
+        videoStreamSwitch = getView().findViewById(R.id.videoStreamSwitch);
         SetDeviceStatus("p1", mainActivity.tratPiConnected);
         SetDeviceStatus("p2", mainActivity.guizPiConnected);
         SetDeviceStatus("arduino", mainActivity.arduinoConnected);
-    }
+
+        videoStreamSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if(!mainActivity.isConnectedToRack()) return;
+
+                if(isChecked)
+                {
+                    videoReceiverThread = new VideoReceiverThread(mainActivity);
+                    UtilitiesClass.getInstance().ExecuteRunnable(videoReceiverThread);
+                }
+                else
+                {
+                    if(videoReceiverThread != null)
+                        videoReceiverThread.kill();
+                    try{Thread.sleep(100);}catch(Exception e){}
+                    videoFrame.setImageBitmap(null);
+                }
+            }
+        });
+}
 
     public void SetTemperatureLabel(String temperature)
     {
@@ -84,6 +122,20 @@ public class InfoFragment extends Fragment
                     arduinoConnectText.setTextColor(ContextCompat.getColor(this.getContext(), R.color.disabled));
                 }
                 break;
+        }
+    }
+
+    public void SetVideoCurrentFrame(byte[] frameBuf)
+    {
+        Bitmap bmp = BitmapFactory.decodeByteArray(frameBuf, 0, frameBuf.length);
+        videoFrame.setImageBitmap(Bitmap.createScaledBitmap(bmp, videoFrame.getWidth(), videoFrame.getHeight(), false));
+    }
+
+    public void KillVideoReceiverThread()
+    {
+        if(videoReceiverThread.isRunning())
+        {
+            videoReceiverThread.kill();
         }
     }
 }
