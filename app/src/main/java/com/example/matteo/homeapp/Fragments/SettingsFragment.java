@@ -77,7 +77,7 @@ public class SettingsFragment extends Fragment
                         rackIPText.setHint(newRackIP);
                         mainActivity.rackIP = newRackIP;
                         mainActivity.setConnectedToRack(false);
-                        mainActivity.StartConnectionThread();
+                        mainActivity.StartNewConnectionThread();
                     }
                     if(!newRackPort.equals(""))
                     {
@@ -85,7 +85,7 @@ public class SettingsFragment extends Fragment
                         rackPortText.setHint(newRackPort);
                         mainActivity.rackPort = newRackPort;
                         mainActivity.setConnectedToRack(false);
-                        mainActivity.StartConnectionThread();
+                        mainActivity.StartNewConnectionThread();
                     }
                     if(!newDefaultRainbowRate.equals(""))
                     {
@@ -96,7 +96,7 @@ public class SettingsFragment extends Fragment
                     break;
 
                 case R.id.reconnectRackButton:
-                    mainActivity.StartConnectionThread();
+                    mainActivity.StartNewConnectionThread();
                     break;
 
                 case R.id.reconnectP1Button:

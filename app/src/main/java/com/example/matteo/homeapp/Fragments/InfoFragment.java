@@ -29,6 +29,8 @@ import com.example.matteo.homeapp.Runnables.VideoReceiverThread;
 
 public class InfoFragment extends Fragment
 {
+    private InfoFragment context;
+    public int udpMappedPort = 0;
     private MainActivity mainActivity;
     private Switch videoStreamSwitch;
     private VideoReceiverThread videoReceiverThread = null;
@@ -42,6 +44,7 @@ public class InfoFragment extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
+        context = this;
         mainActivity = (MainActivity)getActivity();
         return inflater.inflate(R.layout.fragment_info, null);
     }
@@ -60,24 +63,20 @@ public class InfoFragment extends Fragment
         SetDeviceStatus("p2", mainActivity.guizPiConnected);
         SetDeviceStatus("arduino", mainActivity.arduinoConnected);
 
-        videoStreamSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-                if(!mainActivity.isConnectedToRack()) return;
+        videoStreamSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(!mainActivity.isConnectedToRack()) return;
 
-                if(isChecked)
-                {
-                    videoReceiverThread = new VideoReceiverThread(mainActivity);
-                    UtilitiesClass.getInstance().ExecuteRunnable(videoReceiverThread);
-                }
-                else
-                {
-                    if(videoReceiverThread != null)
-                        videoReceiverThread.kill();
-                    try{Thread.sleep(100);}catch(Exception e){}
-                    videoFrame.setImageBitmap(null);
-                }
+            if(isChecked)
+            {
+                videoReceiverThread = new VideoReceiverThread(mainActivity, context);
+                UtilitiesClass.getInstance().ExecuteRunnable(videoReceiverThread);
+            }
+            else
+            {
+                if(videoReceiverThread != null)
+                    videoReceiverThread.kill();
+                try{Thread.sleep(100);}catch(Exception e){}
+                videoFrame.setImageBitmap(null);
             }
         });
 }
@@ -133,9 +132,15 @@ public class InfoFragment extends Fragment
 
     public void KillVideoReceiverThread()
     {
-        if(videoReceiverThread.isRunning())
+        if(videoReceiverThread != null && videoReceiverThread.isRunning())
         {
             videoReceiverThread.kill();
         }
     }
+
+    public synchronized void SetUDPMappedPort(int port)
+    {
+        udpMappedPort = port;
+    }
+    public synchronized int GetUDPMappedPort(){return udpMappedPort;}
 }

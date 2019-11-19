@@ -1,11 +1,7 @@
 package com.example.matteo.homeapp.HomeApp;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import androidx.core.app.*;
+
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -15,7 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
+
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -34,7 +30,7 @@ import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-    private ConnectionRunnable connectionRunnable = null;
+    public ConnectionRunnable connectionRunnable = null;
     public ListenerRunnable listenerRunnable;
     public TextView toolbarConnectionText;
     public String rackIP = "192.168.1.40";
@@ -61,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     {
         super.onResume();
         UtilitiesClass.getInstance().LoadAppPreferences();
-        StartConnectionThread();
+        StartNewConnectionThread();
     }
 
     @Override
@@ -78,6 +74,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if(connectedToRack)
             UtilitiesClass.getInstance().ExecuteRunnable(new SendDataRunnable("disconnecting", this));
+
+        if(currentFragment.getClass().equals(InfoFragment.class))
+        {
+            InfoFragment info = (InfoFragment) currentFragment;
+            info.KillVideoReceiverThread();
+        }
     }
 
     @Override
@@ -162,8 +164,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void StartConnectionThread()
+    public void StartNewConnectionThread()
     {
+        if(connectionRunnable != null)
+        {
+            connectionRunnable.kill();
+        }
         toolbarConnectionText.setText("Trying to connect...");
         connectionRunnable = new ConnectionRunnable(this);
         UtilitiesClass.getInstance().ExecuteRunnable(connectionRunnable);

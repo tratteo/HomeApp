@@ -39,6 +39,7 @@ public class ListenerRunnable implements KillableRunnable
                 if (serverResponse != null)
                 {
                     serverResponse = serverResponse.toLowerCase();
+
                     CheckCommandToExecute();
                 }
             } catch (IOException ignored) {}
@@ -47,11 +48,17 @@ public class ListenerRunnable implements KillableRunnable
 
     private void CheckCommandToExecute()
     {
+        //Log.d("DEBUGLISTENER", serverResponse);
         //Info fragment is active
         if(mainActivity.getCurrentFragment().getClass().equals(InfoFragment.class))
         {
             final InfoFragment infoFragment = (InfoFragment) mainActivity.getCurrentFragment();
             //Temperature
+            if(serverResponse.length() > 8 && serverResponse.substring(0, 8).equals("udpport-"))
+            {
+                infoFragment.SetUDPMappedPort(Integer.parseInt(serverResponse.substring(8)));
+                Log.d("DEBUGLISTENER", ""+infoFragment.GetUDPMappedPort());
+            }
             if (UtilitiesClass.getInstance().IsStringFloatConvertible(serverResponse))
             {
                 UtilitiesClass.getInstance().ExecuteOnMainThread(() ->  infoFragment.SetTemperatureLabel(serverResponse));
